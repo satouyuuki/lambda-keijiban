@@ -55,5 +55,16 @@ const Dynamo = {
 
     return res;
   },
+  delete: async (id, TableName) => {
+    const params = {
+      TableName,
+      Key: { id }
+    };
+    const data = await documentClient
+      .delete(params)
+      .promise();
+
+    return data;
+  },
 };
 module.exports = Dynamo;

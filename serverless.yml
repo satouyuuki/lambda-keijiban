@@ -14,6 +14,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
       Resource: 
         !GetAtt KaniKeijibanDB.Arn
 custom:
@@ -40,6 +41,13 @@ functions:
       - http:
           path: api/posts/{id}
           method: put
+          cors: true
+  deleteKeijibanPosts:
+    handler: lambdas/endpoints/deleteKeijibanPosts.handler
+    events:
+      - http:
+          path: api/posts/{id}
+          method: delete
           cors: true
 resources:
  Resources:
