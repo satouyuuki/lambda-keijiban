@@ -33,6 +33,27 @@ const Dynamo = {
       .promise()
     
     return data;
-  }
+  },
+  update: async ({ id, tableName, updateKey, updateValue }) => {
+    const params = {
+      TableName: tableName,
+      Key: {
+        id
+      },
+      UpdateExpression: `set #tx = :updateValue`,
+      ExpressionAttributeNames: {
+        '#tx': updateKey
+      },
+      ExpressionAttributeValues: {
+        ':updateValue': updateValue
+      },
+    };
+
+    const res = await documentClient
+      .update(params)
+      .promise();
+
+    return res;
+  },
 };
 module.exports = Dynamo;

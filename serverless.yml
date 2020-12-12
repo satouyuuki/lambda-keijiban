@@ -13,6 +13,7 @@ provider:
       Action: 
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:UpdateItem
       Resource: 
         !GetAtt KaniKeijibanDB.Arn
 custom:
@@ -32,6 +33,13 @@ functions:
       - http:
           path: api/posts
           method: post
+          cors: true
+  updateKeijibanPosts:
+    handler: lambdas/endpoints/updateKeijibanPosts.handler
+    events:
+      - http:
+          path: api/posts/{id}
+          method: put
           cors: true
 resources:
  Resources:
