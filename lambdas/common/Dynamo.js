@@ -55,6 +55,30 @@ const Dynamo = {
 
     return res;
   },
+  updateComment: async ({ id, tableName, updateKey, updateValue }) => {
+    const key = Object.keys(updateValue)[0];
+    const value = Object.values(updateValue)[0];
+    const params = {
+      TableName: tableName,
+      Key: {
+        id
+      },
+      UpdateExpression: `set #tx.#key = :value`,
+      ExpressionAttributeNames: {
+        '#tx': updateKey,
+        '#key': key
+      },
+      ExpressionAttributeValues: {
+        ':value': value
+      },
+    };
+
+    const res = await documentClient
+      .update(params)
+      .promise();
+
+    return res;
+  },
   delete: async (id, TableName) => {
     const params = {
       TableName,

@@ -43,6 +43,13 @@ functions:
           path: api/posts/{id}
           method: put
           cors: true
+  updateKeijibanComments:
+    handler: lambdas/endpoints/updateKeijibanComments.handler
+    events:
+      - http:
+          path: api/posts/comments/{id}
+          method: put
+          cors: true
   deleteKeijibanPosts:
     handler: lambdas/endpoints/deleteKeijibanPosts.handler
     events:
