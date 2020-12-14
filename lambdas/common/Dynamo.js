@@ -66,5 +66,14 @@ const Dynamo = {
 
     return data;
   },
+  scan: async (TableName) => {
+    const params = {
+      TableName
+    };
+    const res = await documentClient
+      .scan(params)
+      .promise();
+    return res.Items;
+  },
 };
 module.exports = Dynamo;
