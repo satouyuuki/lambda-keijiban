@@ -23,6 +23,10 @@ plugins:
   - serverless-sync-s3buckets
 
 custom:
+  siteName: yuuki-aws-dev.work
+  aliasHostedZoneId: Z3AQBSTGFYJSTF
+  hostedZoneId: Z1VE5MFYDL6VU
+  aliasDNSName: s3-website-us-east-1.amazonaws.com
   syncS3Buckets:
     - bucketRef: KaniKeijibanWebSitev2
       localDir: static
@@ -76,7 +80,7 @@ resources:
   KaniKeijibanWebSitev2:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: yuuki-aws-dev.work
+      BucketName: ${self:custom.siteName}
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -103,6 +107,16 @@ resources:
                   "/*"
                 ]
               ]
+  DnsRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      AliasTarget:
+        DNSName: ${self:custom.aliasDNSName}
+        HostedZoneId: ${self:custom.aliasHostedZoneId}
+      HostedZoneId: ${self:custom.hostedZoneId}
+      Name:
+        Ref: KaniKeijibanWebSitev2
+      Type: 'A'
   KaniKeijibanDB:
     Type: AWS::DynamoDB::Table
     Properties:
