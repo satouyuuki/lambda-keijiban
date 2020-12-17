@@ -1,4 +1,4 @@
-service: kani-keijiban
+service: kani-keijiban-v2
 frameworkVersion: '2'
 
 provider:
@@ -18,7 +18,14 @@ provider:
         - dynamodb:Scan
       Resource: 
         !GetAtt KaniKeijibanDB.Arn
+        
+plugins:
+  - serverless-sync-s3buckets
+
 custom:
+  syncS3Buckets:
+    - bucketRef: KaniKeijibanWebSitev2
+      localDir: static
   tableName: KaniPosts
 
 functions:
@@ -66,7 +73,37 @@ functions:
           cors: true
 resources:
  Resources:
-   KaniKeijibanDB:
+  KaniKeijibanWebSitev2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: yuuki-aws-dev.work
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+  KaniKeijibanWebSiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: KaniKeijibanWebSitev2
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 
+              - s3:GetObject
+            Resource:
+              Fn::Join: [
+                "", [
+                  "arn:aws:s3:::",
+                  {
+                    "Ref": KaniKeijibanWebSitev2
+                  },
+                  "/*"
+                ]
+              ]
+  KaniKeijibanDB:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ${self:custom.tableName}

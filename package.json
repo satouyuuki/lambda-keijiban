@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "serverless-sync-s3buckets": "^1.0.1"
+  }
+}
