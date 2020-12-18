@@ -72,7 +72,9 @@ exports.handler = async (event, context, callback) => {
       // failed as id not in the data
       return Responses._400({ message: 'Failed to write post by id' });
     }
-    return Responses._200({ newPost });
+    // returnが{}だからresを返す
+    return Responses._200(dbObject);
+    // return Responses._200({ newPost });
 
   } catch (error) {
     console.log('error', error);

@@ -2,33 +2,35 @@
 const IMG_SIZE_LIMIT = 1024 * 1024 * 1; // 制限サイズ
 const URL = 'https://lr1ufll9if.execute-api.us-east-1.amazonaws.com/test/api';
 const postData = {};
-
+const file = document.getElementById('file');
+const keijibanForm = document.forms.keijibanForm;
 document.addEventListener('DOMContentLoaded', iniLoad)
 file.addEventListener('change', handleFileSelect);
-button.addEventListener('click', formSubmit);
+keijibanForm.addEventListener('submit', formSubmit);
 
 async function iniLoad() {
   try {
-    // body: JSON.stringify(postData),しないといけない
     const res = await axios.get(`${URL}/posts`);
     res.data.forEach(post => {
-      const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
-      output.innerHTML += `
-        <p>id: ${post.id}</p>
-        <p>name: ${post.name}</p>
-        <div>${post.text}</div>
-        <p>作成日: ${japanDate(post.date)}</p>
-        ${imgContents}
-        <button>更新</button>
-        <button>削除</button>
-      `;
+      createPostData(post);
     });
   } catch (err) {
     console.log('err', err);
   }
 }
 
-
+function createPostData(post) {
+  const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
+  output.innerHTML += `
+    <p>id: ${post.id}</p>
+    <p>name: ${post.name}</p>
+    <div>${post.text}</div>
+    <p>作成日: ${japanDate(post.date)}</p>
+    ${imgContents}
+    <button>更新</button>
+    <button>削除</button>
+  `;
+}
 
 // 画像ファイルをアップロードする
 function handleFileSelect() {
@@ -45,41 +47,41 @@ function handleFileSelect() {
 // 画像記事を送信する時
 async function formSubmit(e) {
   e.preventDefault();
-  const name = document.getElementsByName('name')[0].value;
-  const text = document.getElementsByName('text')[0].value;
-  if (!name || !text) {
-    alert('名前/テキストが空白です');
-    return;
-  }
-  postData.name = name;
-  postData.text = text;
-  // ファイルデータ
   try {
-    console.log('front end postData = ', postData);
-    // body: JSON.stringify(postData),しないといけない
-    await axios.post(`${URL}/posts`, postData);
-    file.value = ''; // inputの中身をリセット
-    console.log('front end res = ', res);
+    const formData = new FormData(keijibanForm);
+    for (let value of formData.entries()) {
+      if (value[0] !== 'file') {
+        postData[value[0]] = value[1];
+      }
+    }
+    // ファイルデータ
+    const res = await axios.post(`${URL}/posts`, postData);
+    // フォームをリセット
+    document.keijibanForm.reset();
+    const newPost = res.data;
+    createPostData(newPost);
   } catch (err) {
     console.log('err', err);
   }
 }
 
+// Fileオブジェクトの中身を整形する
+function customFileData(imageUrl) {
+  const parts = imageUrl.split(';');
+  const mime = parts[0].split(':')[1];
+  const image = parts[1];
+  return { mime, image };
+}
+
 // 画像をプレビューする
 function previewFile(file) {
-  // プレビュー画像を追加する要素
   const preview = document.getElementById('preview');
-  // FileReaderオブジェクトを作成
   const reader = new FileReader();
-  // URLとして読み込まれたときに実行する処理
   reader.onload = function (e) {
-    const imageUrl = e.target.result; // URLはevent.target.resultで呼び出せる
-    const parts = imageUrl.split(';');
-    postData.mime = parts[0].split(':')[1];
-    postData.name = file.name;
-    postData.image = parts[1];
-    const img = document.createElement("img"); // img要素を作成
-    img.src = imageUrl; // URLをimg要素にセット
+    const imageUrl = e.target.result;
+    Object.assign(postData, customFileData(imageUrl));
+    const img = document.createElement("img");
+    img.src = imageUrl;
     img.id = 'imgData';
     // もしもうファイルがあったらデータを削除
     while (preview.firstChild) {
@@ -87,10 +89,9 @@ function previewFile(file) {
     }
     preview.appendChild(img); // #previewの中に追加
   }
-
   reader.readAsDataURL(file);
 }
-
+// 描画する日付を整形
 function japanDate(dataTime) {
   const date = new Date(dataTime);
   const year = date.getFullYear();

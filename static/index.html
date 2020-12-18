@@ -4,21 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>画像掲示板</title>
 </head>
 
 <body>
-  <input type="file" id="file">
-  <div id="preview"></div>
-  <div>
-    <label for="">名前</label>
-    <input type="text" name="name" placeholder="名前">
-  </div>
-  <div>
-    <label for="">詳細</label>
-    <textarea name="text" id="" cols="30" rows="10" placeholder="詳細"></textarea>
-  </div>
-  <button id="button">送信</button>
+  <form action="" method="post" name="keijibanForm">
+    <input type="file" id="file" name="file">
+    <div id="preview"></div>
+    <div>
+      <label for="name">名前</label>
+      <input type="text" name="name" id="name" placeholder="名前">
+    </div>
+    <div>
+      <label for="textarea">詳細</label>
+      <textarea name="text" id="textarea" placeholder="詳細" required></textarea>
+    </div>
+    <button type="submit">送信</button>
+  </form>
 
   <div id="output">
   </div>
