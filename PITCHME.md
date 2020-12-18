@@ -46,7 +46,7 @@ URL: https://yuuki-aws-dev.work
 
 ---
 ### そんなこんなで道のりは長かった
----?image=LT_IMAGE/kanikeijiban.jpeg
+---?image=LT_IMAGE/kanikeijiban.png
 ### 設計
 ---
 ### 悩んだ部分
