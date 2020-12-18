@@ -24,7 +24,7 @@ URL: https://yuuki-aws-dev.work
 ### 参考サイト: 
 このきなんの木掲示板
 ![alt](LT_IMAGE/konokinannoki.png)
----?image=IT_IMAGE/nayami.jpeg
+---?image=LT_IMAGE/nayami.jpeg
 ### 5週間やってみて
 
 - １−4週間が壊滅的に進まなかった |
@@ -46,8 +46,7 @@ URL: https://yuuki-aws-dev.work
 
 ---
 ### そんなこんなで道のりは長かった
-
----?image=IT_IMAGE/kanikeijiban.jpeg
+---?image=LT_IMAGE/kanikeijiban.jpeg
 ### 設計
 ---
 ### 悩んだ部分
