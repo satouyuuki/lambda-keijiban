@@ -1,1 +1,29 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <input type="file" id="file">
+  <div id="preview"></div>
+  <div>
+    <label for="">名前</label>
+    <input type="text" name="name" placeholder="名前">
+  </div>
+  <div>
+    <label for="">詳細</label>
+    <textarea name="text" id="" cols="30" rows="10" placeholder="詳細"></textarea>
+  </div>
+  <button id="button">送信</button>
+
+  <div id="output">
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="main.js"></script>
+
+</html>

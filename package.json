@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "serverless-sync-s3buckets": "^1.0.1"
+  },
+  "dependencies": {
+    "file-type": "^16.0.1",
+    "uuid": "^8.3.2"
   }
 }

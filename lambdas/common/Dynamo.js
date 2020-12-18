@@ -17,15 +17,15 @@ const Dynamo = {
     
     return data.Item;
   },
-  put: async (item, TableName) => {
+  put: async (item, tableName) => {
     if (!item.id) {
       throw Error('idがありません');
     }
 
     const params = {
-      TableName,
+      TableName: tableName,
       Item: item,
-      // ReturnValues: "ALL_OLD" // return {}
+      ReturnValues: "ALL_OLD"
     };
     
     const data = await documentClient

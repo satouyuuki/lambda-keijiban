@@ -8,6 +8,8 @@ provider:
   region: us-east-1
   environment:
     tableName: ${self:custom.tableName}
+    imageUploadBucket: ${self:custom.imageUploadBucket}
+    region: ${self:provider.region}
   iamRoleStatements:
     - Effect: Allow
       Action: 
@@ -16,14 +18,21 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:Scan
+        - s3:PutObject
+        - s3:PutObjectAcl
       Resource: 
-        !GetAtt KaniKeijibanDB.Arn
+        - !GetAtt KaniKeijibanDB.Arn
+        - !Join
+          - ''
+          - - !GetAtt ImageUploadBucket.Arn
+            - '/*'
         
 plugins:
   - serverless-sync-s3buckets
 
 custom:
   siteName: yuuki-aws-dev.work
+  imageUploadBucket: keijiban-image-upload-bucket-1218
   aliasCloudFrontId: Z2FDTNDATAQYW2
   hostedZoneId: Z1VE5MFYDL6VU
   aliasCloudFrontName: !GetAtt CloudFrontDistribution.DomainName
@@ -77,6 +86,11 @@ functions:
           cors: true
 resources:
  Resources:
+  ImageUploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.imageUploadBucket}
+      AccessControl: PublicRead
   KaniKeijibanWebSitev2:
     Type: AWS::S3::Bucket
     Properties:
