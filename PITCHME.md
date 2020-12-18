@@ -4,7 +4,7 @@
 **名前**：ゆうき
 **仕事**：現在Webの受託開発企業で主にvue書いてます
 
-![alt](LT_IMAGE/my_image.jpg)
+![alt](LT_IMAGE/my_image.JPG)
 
 ---
 ### 何を作ったのか
@@ -24,7 +24,6 @@ URL: https://yuuki-aws-dev.work
 ### 参考サイト: 
 このきなんの木掲示板
 ![alt](LT_IMAGE/konokinannoki.png)
-
 ---?image=IT_IMAGE/nayami.jpeg
 ### 5週間やってみて
 
@@ -49,7 +48,7 @@ URL: https://yuuki-aws-dev.work
 ### そんなこんなで道のりは長かった
 
 ---?image=IT_IMAGE/kanikeijiban.jpeg
-
+### 設計
 ---
 ### 悩んだ部分
 
