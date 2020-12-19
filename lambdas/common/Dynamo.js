@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
-
+const { v4: uuid } = require('uuid');
 const Dynamo = {
   get: async (id, TableName) => {
     const params = {
@@ -56,8 +56,8 @@ const Dynamo = {
     return res;
   },
   updateComment: async ({ id, tableName, updateKey, updateValue }) => {
-    const key = Object.keys(updateValue)[0];
-    const value = Object.values(updateValue)[0];
+    const key = uuid();
+    updateValue.date = new Date().getTime();
     const params = {
       TableName: tableName,
       Key: {
@@ -69,15 +69,16 @@ const Dynamo = {
         '#key': key
       },
       ExpressionAttributeValues: {
-        ':value': value
+        ':value': updateValue
       },
     };
 
-    const res = await documentClient
+    await documentClient
       .update(params)
       .promise();
-
-    return res;
+    const returnData = {};
+    returnData[key] = updateValue;
+    return returnData;
   },
   delete: async (id, TableName) => {
     const params = {

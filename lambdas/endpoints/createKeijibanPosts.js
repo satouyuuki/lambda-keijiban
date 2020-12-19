@@ -20,6 +20,7 @@ exports.handler = async (event, context, callback) => {
     dbObject.name = body.name || '名無しさん';
     dbObject.text = body.text;
     dbObject.date = new Date().getTime();
+    dbObject.comments = {};
 
     if (body.image || body.mime) {
       if (!allowedMimes.includes(body.mime)) {

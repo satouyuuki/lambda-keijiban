@@ -8,6 +8,7 @@ exports.handler = async (event, context, callback) => {
   const id = event.pathParameters.id;
 
   const comments = JSON.parse(event.body);
+  comments.name = comments.name || '名無しさん';
   const updateParams = {
     id,
     tableName: TableName,

@@ -10,24 +10,21 @@
 </head>
 
 <body>
+  <div id="output">
+  </div>
   <form action="" method="post" name="keijibanForm">
-    <input type="file" id="file" name="file">
-    <div id="preview"></div>
     <div>
       <label for="name">名前</label>
       <input type="text" name="name" id="name" placeholder="名前">
     </div>
     <div>
-      <label for="textarea">詳細</label>
-      <textarea name="text" id="textarea" placeholder="詳細" required></textarea>
+      <label for="comment">コメント</label>
+      <input type="text" name="comment" id="comment" placeholder="コメント" required>
     </div>
     <button type="submit">送信</button>
   </form>
-
-  <div id="output">
-  </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="main.js"></script>
+<script src="detail.js"></script>
 
 </html>
