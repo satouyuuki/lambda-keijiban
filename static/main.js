@@ -18,10 +18,14 @@ async function iniLoad() {
     console.log('err', err);
   }
 }
+
 async function deletePost(val) {
   try {
+    console.log();
     const id = val.dataset.id;
-    await axios.get(`${URL}/posts/${id}`);
+    const fileName = val.dataset.img;
+    console.log({ id, fileName });
+    await axios.delete(`${URL}/posts/${id}`, { data: { fileName }});
     const delElement = document.getElementById(id);
     delElement.remove();
   } catch (err) {
@@ -31,15 +35,24 @@ async function deletePost(val) {
 
 function createPostData(post) {
   const query = `?id=${post.id}`;
-  const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
+  const imageObject = {};
+  if (post.imageURL) {
+    imageObject.text = `<img src="${post.imageURL}" alt="画像" />`
+    const array = post.imageURL.split('/');
+    imageObject.fileName = array[array.length - 1];
+  } else {
+    imageObject.text = '<p>画像はありません</p>';
+    imageObject.fileName = '';
+  }
+  // const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
   output.innerHTML += `
     <div id="${post.id}">
       <p>name: ${post.name}</p>
       <div class="textarea-div">${post.text}</div>
       <p>作成日: ${japanDate(post.date)}</p>
-      <a href="./detail.html${query}">${imgContents}</a>
+      <a href="./detail.html${query}">${imageObject.text}</a>
       <button>更新</button>
-      <button data-id="${post.id}" onclick="deletePost(this)">削除</button>
+      <button data-id="${post.id}" data-img="${imageObject.fileName}" onclick="deletePost(this)">削除</button>
     </div>
   `;
 }
