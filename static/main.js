@@ -18,20 +18,29 @@ async function iniLoad() {
     console.log('err', err);
   }
 }
+async function deletePost(val) {
+  try {
+    const id = val.dataset.id;
+    await axios.get(`${URL}/posts/${id}`);
+    const delElement = document.getElementById(id);
+    delElement.remove();
+  } catch (err) {
+    console.log('err', err);
+  }
+}
 
 function createPostData(post) {
-  const url = location.href;
-  let detailURL = url.replace(/index/, 'detail');
-  detailURL += `?id=${post.id}`;
+  const query = `?id=${post.id}`;
   const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
   output.innerHTML += `
-    <a href="${detailURL}">id: ${post.id}</a>
-    <p>name: ${post.name}</p>
-    <div class="textarea-div">${post.text}</div>
-    <p>作成日: ${japanDate(post.date)}</p>
-    ${imgContents}
-    <button>更新</button>
-    <button>削除</button>
+    <div id="${post.id}">
+      <p>name: ${post.name}</p>
+      <div class="textarea-div">${post.text}</div>
+      <p>作成日: ${japanDate(post.date)}</p>
+      <a href="./detail.html${query}">${imgContents}</a>
+      <button>更新</button>
+      <button data-id="${post.id}" onclick="deletePost(this)">削除</button>
+    </div>
   `;
 }
 
