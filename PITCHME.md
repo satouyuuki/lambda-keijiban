@@ -46,7 +46,7 @@ URL: https://yuuki-aws-dev.work
 
 ---
 ### そんなこんなで道のりは長かった
----?image=LT_IMAGE/kanikeijiban.png
+---?image=LT_IMAGE/kanikeijibanv2.png
 ### 設計
 ---
 ### 悩んだ部分
@@ -92,6 +92,11 @@ comments配列にあるidはわかるがindexがわからない。。
   }
 }
 ```
+
+---
+### 細かい問題
+- ACMのARNがgithubに上げていいのかわからない
+- cloudfrontのキャッシュを毎回消さないといけない
 
 ---
 ### 気付き
