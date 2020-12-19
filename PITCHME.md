@@ -57,7 +57,7 @@ URL: https://yuuki-aws-dev.work
 ```json
 {
   "id": 1,
-  "date": 111111111
+  "date": 111111111,
   "text": "posttext",
   "comments": [
     {
