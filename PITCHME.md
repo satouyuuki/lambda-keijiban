@@ -97,8 +97,10 @@ comments配列にあるidはわかるがindexがわからない。。
 
 ---
 ### 細かい問題
-- ACMのARNがgithubに上げていいのかわからない
-- cloudfrontのキャッシュを毎回消さないといけない
+- ACMのARNがgithubに上げていいのかわからない |
+- - git rebase -i |
+- cloudfrontのキャッシュを毎回消さないといけない |
+- - Invalidationsを消そう |
 
 ---
 ### 気付き
