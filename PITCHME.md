@@ -53,9 +53,11 @@ URL: https://yuuki-aws-dev.work
 
 ---
 ### dynamodbの設計
+- 日付の管理にテクニックがいる new Date().getTime()
 ```json
 {
   "id": 1,
+  "date": 111111111
   "text": "posttext",
   "comments": [
     {
