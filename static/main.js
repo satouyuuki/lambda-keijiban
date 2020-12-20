@@ -21,7 +21,6 @@ async function iniLoad() {
 
 async function deletePost(val) {
   try {
-    console.log();
     const id = val.dataset.id;
     const fileName = val.dataset.img;
     console.log({ id, fileName });
@@ -33,7 +32,37 @@ async function deletePost(val) {
   }
 }
 
-function createPostData(post) {
+function editCancel(canselBtn, prevVal) {
+  canselBtn.parentNode.innerHTML = prevVal;
+}
+
+async function updatePost(updateBtn) {
+  const text = document.getElementsByName('updateText')[0].value;
+  if (!text) {
+    alert('入力してください')
+  }
+  const id = updateBtn.dataset.id;
+  const res = await axios.put(`${URL}/posts/${id}`, { text });
+  if (!res) return;
+  Array.prototype.forEach.call(output.children, (item) => {
+    if (item.id === res.data.id) {
+      item.innerHTML = '';
+      createPostData(res.data, item);
+    }
+  });
+}
+function editPost(val) {
+  const id = val.dataset.id;
+  const prevEl = val.previousElementSibling;
+  const prevVal = val.previousElementSibling.textContent;
+  prevEl.innerHTML = `
+    <textarea name="updateText" required>${prevVal}</textarea>
+    <button onclick="editCancel(this, this.previousElementSibling.value)">キャンセル</button>
+    <button data-id="${id}" onclick="updatePost(this)">更新</button>
+  `
+}
+
+function createPostData(post, target = output) {
   const query = `?id=${post.id}`;
   const imageObject = {};
   if (post.imageURL) {
@@ -44,15 +73,14 @@ function createPostData(post) {
     imageObject.text = '<p>画像はありません</p>';
     imageObject.fileName = '';
   }
-  // const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
-  output.innerHTML += `
+  target.innerHTML += `
     <div id="${post.id}">
       <p>name: ${post.name}</p>
       <div class="textarea-div">${post.text}</div>
+      <button data-id="${post.id}" onclick="editPost(this)">更新</button>
+      <button data-id="${post.id}" data-img="${imageObject.fileName}" onclick="deletePost(this)">削除</button>
       <p>作成日: ${japanDate(post.date)}</p>
       <a href="./detail.html${query}">${imageObject.text}</a>
-      <button>更新</button>
-      <button data-id="${post.id}" data-img="${imageObject.fileName}" onclick="deletePost(this)">削除</button>
     </div>
   `;
 }

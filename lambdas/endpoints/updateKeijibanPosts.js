@@ -15,7 +15,12 @@ exports.handler = async (event, context, callback) => {
     updateValue: text
   };
 
-  const res = await Dynamo.update(updateParams);
-  console.log('res = ', res);
-  return Responses._200({});
+  const res = await Dynamo.update(updateParams).catch(err => {
+    console.log('update faild', err);
+    return null;
+  })
+  if (!res) {
+    return Responses._400({ message: 'response is null' });
+  }
+  return Responses._200(res.Attributes);
 }

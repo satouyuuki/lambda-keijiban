@@ -47,6 +47,7 @@ const Dynamo = {
       ExpressionAttributeValues: {
         ':updateValue': updateValue
       },
+      ReturnValues: 'ALL_NEW'
     };
 
     const res = await documentClient
