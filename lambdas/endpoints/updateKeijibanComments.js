@@ -17,5 +17,5 @@ exports.handler = async (event, context, callback) => {
   };
 
   const res = await Dynamo.updateComment(updateParams);
-  return Responses._200(res);
+  return Responses._200(res.Attributes);
 }

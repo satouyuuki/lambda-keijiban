@@ -72,14 +72,16 @@ const Dynamo = {
       ExpressionAttributeValues: {
         ':value': updateValue
       },
+      ReturnValues: 'ALL_NEW'
     };
 
-    await documentClient
+    const res = await documentClient
       .update(params)
       .promise();
-    const returnData = {};
-    returnData[key] = updateValue;
-    return returnData;
+    // const returnData = {};
+    // returnData[key] = updateValue;
+    // return returnData;
+    return res;
   },
   delete: async (id, TableName) => {
     const params = {
