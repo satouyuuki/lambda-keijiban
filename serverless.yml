@@ -33,13 +33,17 @@ plugins:
 
 custom:
   siteName: yuuki-aws-dev.work
+  adminSiteName: admin.yuuki-aws-dev.work
   imageUploadBucket: keijiban-image-upload-bucket-1218
   aliasCloudFrontId: Z2FDTNDATAQYW2
   hostedZoneId: Z1VE5MFYDL6VU
   aliasCloudFrontName: !GetAtt CloudFrontDistribution.DomainName
+  adminAliasCloudFrontName: !GetAtt AdminCloudFrontDistribution.DomainName
   syncS3Buckets:
     - bucketRef: KaniKeijibanWebSitev2
-      localDir: static
+      localDir: static/public
+    - bucketRef: KaniKeijibanAdminWebSite
+      localDir: static/auth
   tableName: KaniPosts
 
 functions:
@@ -113,15 +117,42 @@ resources:
             Action: 
               - s3:GetObject
             Resource:
-              Fn::Join: [
-                "", [
-                  "arn:aws:s3:::",
-                  {
-                    "Ref": KaniKeijibanWebSitev2
-                  },
-                  "/*"
-                ]
-              ]
+              !Join
+                - ''
+                - - "arn:aws:s3:::"
+                  - Ref: KaniKeijibanWebSitev2
+                  - '/*'
+  KaniKeijibanAdminWebSite:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.adminSiteName}
+      AccessControl: Private
+      PublicAccessBlockConfiguration: 
+        BlockPublicAcls: false
+        BlockPublicPolicy: true
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: true
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+  KaniKeijibanAdminWebSiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: KaniKeijibanAdminWebSite
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 
+              - s3:GetObject
+            Resource:
+              !Join
+                - ''
+                - - "arn:aws:s3:::"
+                  - Ref: KaniKeijibanAdminWebSite
+                  - '/*'
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -148,7 +179,35 @@ resources:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
-          AcmCertificateArn: 	arn:aws:acm:<region>:<accountId>:certificate/<certificateId>
+          AcmCertificateArn: ${env:ACM_ARN}
+          SslSupportMethod: sni-only
+  AdminCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - ${self:custom.adminSiteName}
+        Origins:
+          - DomainName: ${self:custom.adminSiteName}.s3-website-${self:provider.region}.amazonaws.com
+            Id: S3AdminOrigin
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          TargetOriginId: S3AdminOrigin
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          AcmCertificateArn: ${env:ACM_ARN}
           SslSupportMethod: sni-only
   DnsRecord:
     Type: "AWS::Route53::RecordSet"
@@ -159,6 +218,16 @@ resources:
       HostedZoneId: ${self:custom.hostedZoneId}
       Name:
         Ref: KaniKeijibanWebSitev2
+      Type: 'A'
+  AdminDnsRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      AliasTarget:
+        DNSName: ${self:custom.adminAliasCloudFrontName}
+        HostedZoneId: ${self:custom.aliasCloudFrontId}
+      HostedZoneId: ${self:custom.hostedZoneId}
+      Name:
+        Ref: KaniKeijibanAdminWebSite
       Type: 'A'
   KaniKeijibanDB:
     Type: AWS::DynamoDB::Table
