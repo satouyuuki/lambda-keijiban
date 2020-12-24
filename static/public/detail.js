@@ -1,25 +1,48 @@
 'use strict';
+// 名前空間
+var KANIKEIJIBAN = KANIKEIJIBAN || {};
+KANIKEIJIBAN.DETAIL = {};
+KANIKEIJIBAN.DETAIL.DISPLAY = {
+  postData: {},
+  init: async function() {
+    try {
+      const URL = 'https://lr1ufll9if.execute-api.us-east-1.amazonaws.com/test/api';
+      const ID = decodeURI(window.location.search).split('=')[1];
+      const res = await axios.get(`${URL}/posts/${ID}`);
+      this.postData = res.data;
+      console.log(this.postData);
+      // createPostData(res.data);
+    } catch (err) {
+      console.log('err', err);
+    }
+  }
+};
+(() => {
+    KANIKEIJIBAN.DETAIL.DISPLAY.init();
+})();
+
+
 // const IMG_SIZE_LIMIT = 1024 * 1024 * 1; // 制限サイズ
-const URL = 'https://lr1ufll9if.execute-api.us-east-1.amazonaws.com/test/api';
-const ID = decodeURI(window.location.search).split('=')[1];
-const postData = {};
+// const URL = 'https://lr1ufll9if.execute-api.us-east-1.amazonaws.com/test/api';
+// const ID = decodeURI(window.location.search).split('=')[1];
+// const postData = {};
 // const file = document.getElementById('file');
 const keijibanForm = document.forms.keijibanForm;
-document.addEventListener('DOMContentLoaded', iniLoad)
+// document.addEventListener('DOMContentLoaded', iniLoad)
 // file.addEventListener('change', handleFileSelect);
 keijibanForm.addEventListener('submit', formSubmit);
 
-async function iniLoad() {
-  try {
-    const res = await axios.get(`${URL}/posts/${ID}`);
-    console.log(res);
-    // res.data.forEach(post => {
-    createPostData(res.data);
-    // });
-  } catch (err) {
-    console.log('err', err);
-  }
-}
+// async function iniLoad() {
+//   try {
+//     const res = await axios.get(`${URL}/posts/${ID}`);
+//     console.log(res);
+//     // res.data.forEach(post => {
+//     createPostData(res.data);
+//     // });
+//   } catch (err) {
+//     console.log('err', err);
+//   }
+// }
 
 function createPostData(post) {
   const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像" />` : `<p>画像はありません</p>`;
