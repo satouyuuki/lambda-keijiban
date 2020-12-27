@@ -78,21 +78,18 @@ const Dynamo = {
     const res = await documentClient
       .update(params)
       .promise();
-    // const returnData = {};
-    // returnData[key] = updateValue;
-    // return returnData;
     return res;
   },
   delete: async (id, TableName) => {
     const params = {
       TableName,
-      Key: { id }
+      Key: { id },
+      ReturnValues: 'ALL_OLD'
     };
     const data = await documentClient
       .delete(params)
       .promise();
-
-    return data;
+    return data.Attributes;
   },
   scan: async (TableName) => {
     const params = {
