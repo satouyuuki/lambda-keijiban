@@ -5,9 +5,9 @@ const idToken = (() => {
 // Initialize the Amazon Cognito credentials provider
 AWS.config.region = 'us-east-1';
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: 'us-east-1:0ee0b28c-4668-4078-95e8-7c36f47fcc87',
+  IdentityPoolId: 'us-east-1:248a47d5-22ee-4aea-bfb0-656799868456',
   Logins: {
-    'cognito-idp.us-east-1.amazonaws.com/us-east-1_LvmclkH3H': idToken
+    'cognito-idp.us-east-1.amazonaws.com/us-east-1_ded6avfBY': idToken
   },
 });
 if (!idToken) {

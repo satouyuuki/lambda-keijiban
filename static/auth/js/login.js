@@ -1,6 +1,6 @@
 const poolData = {
-  UserPoolId: "us-east-1_LvmclkH3H",
-  ClientId: "4dqbbdql0q09v749rejtfms9ln"
+  UserPoolId: "us-east-1_ded6avfBY",
+  ClientId: "39aeqlpkm4sfkvqeo56mgp4o0"
 };
 const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
@@ -12,10 +12,6 @@ loginForm.addEventListener('submit', (e) => {
   for (let value of formData.entries()) {
     authenticationData[value[0]] = value[1];
   }
-  // const authenticationData = {
-  //   Username: 'username',
-  //   Password: 'password',
-  // };
   const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
     authenticationData
   );
@@ -34,9 +30,9 @@ loginForm.addEventListener('submit', (e) => {
       AWS.config.region = 'us-east-1';
   
       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:0ee0b28c-4668-4078-95e8-7c36f47fcc87',
+        IdentityPoolId: 'us-east-1:248a47d5-22ee-4aea-bfb0-656799868456',
         Logins: {
-          'cognito-idp.us-east-1.amazonaws.com/us-east-1_LvmclkH3H': idToken
+          'cognito-idp.us-east-1.amazonaws.com/us-east-1_ded6avfBY': idToken
         },
       });
   

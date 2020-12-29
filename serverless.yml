@@ -39,6 +39,7 @@ custom:
   hostedZoneId: Z1VE5MFYDL6VU
   aliasCloudFrontName: !GetAtt CloudFrontDistribution.DomainName
   adminAliasCloudFrontName: !GetAtt AdminCloudFrontDistribution.DomainName
+  authAliasCloudFrontName: dv0xr1eg6kdkg.cloudfront.net
   syncS3Buckets:
     - bucketRef: KaniKeijibanWebSitev2
       localDir: static/public
@@ -229,6 +230,15 @@ resources:
       Name:
         Ref: KaniKeijibanAdminWebSite
       Type: 'A'
+  AuthDnsRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      AliasTarget:
+        DNSName: ${self:custom.authAliasCloudFrontName}
+        HostedZoneId: ${self:custom.aliasCloudFrontId}
+      HostedZoneId: ${self:custom.hostedZoneId}
+      Name: auth.${self:custom.siteName}
+      Type: 'A'
   KaniKeijibanDB:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -242,3 +252,118 @@ resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:provider.stage}-keijiban-user-pool
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      AdminCreateUserConfig: 
+        AllowAdminCreateUserOnly: true
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:provider.stage}-keijiban-user-pool-client
+      UserPoolId:
+        Ref: CognitoUserPool
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+      GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      SupportedIdentityProviders: 
+        - COGNITO
+      AllowedOAuthFlows: 
+        - implicit
+      AllowedOAuthScopes: 
+        - openid
+      CallbackURLs: 
+        - https://${self:custom.adminSiteName}
+      LogoutURLs: 
+        - https://${self:custom.adminSiteName}
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      CustomDomainConfig: 
+        CertificateArn: ${env:ACM_ARN}
+      Domain: auth.${self:custom.siteName}
+      UserPoolId: 
+        Ref: CognitoUserPool
+  CognitoUserIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: ${self:provider.stage}-keijiban-identity-pool
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders:
+        - ClientId:
+            Ref: CognitoUserPoolClient
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
+  IdentityPoolRoleAttachment: 
+    Type: AWS::Cognito::IdentityPoolRoleAttachment 
+    Properties: 
+      IdentityPoolId: !Ref CognitoUserIdentityPool
+      Roles: 
+        authenticated: !GetAtt AuthenticatedRole.Arn 
+        unauthenticated: !GetAtt UnAuthenticatedRole.Arn 
+  UnauthenticatedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action:
+          - mobileanalytics:PutEvents
+          - cognito-sync:*
+          Resource:
+          - "*"
+  UnAuthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action: "sts:AssumeRoleWithWebIdentity"
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Condition:
+            StringEquals:
+              "cognito-identity.amazonaws.com:aud":
+                Ref: CognitoUserIdentityPool
+            ForAnyValue:StringLike:
+              "cognito-identity.amazonaws.com:amr": unauthenticated
+      ManagedPolicyArns:
+      - Ref: UnauthenticatedPolicy
+  AuthenticatedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action:
+          - mobileanalytics:PutEvents
+          - cognito-sync:*
+          - cognito-identity:*
+          Resource:
+          - "*"
+  AuthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action: "sts:AssumeRoleWithWebIdentity"
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Condition:
+            StringEquals:
+              "cognito-identity.amazonaws.com:aud":
+                Ref: CognitoUserIdentityPool
+            ForAnyValue:StringLike:
+              "cognito-identity.amazonaws.com:amr": authenticated
+      ManagedPolicyArns:
+      - Ref: AuthenticatedPolicy
