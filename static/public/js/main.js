@@ -148,7 +148,7 @@ KANIKEIJIBAN.MAIN.VIEW = {
         <p>ネーム: ${post.name}</p>
         <div class="textarea-div">${post.text}</div>
         <a href="./detail.html${query}">返信する</a>
-        <p>作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
+        <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
         <p>${imageObject.text}</p>
         <div class="card__while">
           <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editView(this.dataset.id)">編集</button>

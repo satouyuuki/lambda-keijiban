@@ -15,11 +15,44 @@ img {
   width: 90%;
   max-width: 600px;
   margin: 0 auto;
+  padding: 15px 0;
+}
+.header {
+  background: #2B3C4F;
+  color: #fff;
+}
+.back-icon {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+}
+.back-icon .back-icon__item {
+  display: block;
+  width: 25px;
+  height: 5px;
+  background: #fff;
+  position: relative;
+  transition: .3s;
+  margin-bottom: 5px;
+}
+.back-icon:hover .back-icon__item:nth-child(1) {
+  transform: rotate(-45deg);
+  top: -5px;
+  margin-bottom: 0px;
+}
+.back-icon:hover .back-icon__item:nth-child(2) {
+  transform: rotate(45deg);
+  top: 5px;
+  margin-bottom: 0px;
 }
 .heading1 {
   margin: 0;
   padding: 10px;
   text-align: center;
+}
+.date {
+  color: #ccc;
+  font-size: 12px;
 }
 .card {
   background: #ecece5;
@@ -59,6 +92,7 @@ img {
 .form__textarea {
   width: 100%;
   box-sizing: border-box;
+  padding: 5px;
   resize: none;
   height: 80px;
 }

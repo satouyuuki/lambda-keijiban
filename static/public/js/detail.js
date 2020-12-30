@@ -54,9 +54,9 @@ KANIKEIJIBAN.DETAIL.VIEW = {
     const imgContents = post.imageURL ? `<img src="${post.imageURL}" alt="画像">` : `<p>画像はありません</p>`;
     const result =  `
       <p>id: ${post.id}</p>
-      <p>name: ${post.name}</p>
+      <p>ネーム: ${post.name}</p>
       <div class="textarea-div">${post.text}</div>
-      <p>作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
+      <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
       ${imgContents}
     `;
     return result;
@@ -68,9 +68,9 @@ KANIKEIJIBAN.DETAIL.VIEW = {
       const comment = comments[commentID];
       result += `
         <p>id: ${commentID}</p>
-        <p>名前: ${comment.name}</p>
-        <p>コメント: ${comment.comment}</p>
-        <p>作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(comment.date)}</p>
+        <p>ネーム: ${comment.name}</p>
+        <div class="textarea-div">${comment.comment}</div>
+        <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(comment.date)}</p>
       `;
     });
     return result;

@@ -10,19 +10,41 @@
 </head>
 
 <body>
-  <div id="output">
+  <div class="header">
+    <a href="./" class="back-icon">
+      <span class="back-icon__item"></span>
+      <span class="back-icon__item"></span>
+    </a>
+    <h1 class="heading1">画像アップロード掲示板</h1>
   </div>
-  <form action="" method="post" name="keijibanForm">
-    <div>
-      <label for="name">名前</label>
-      <input type="text" name="name" id="name" placeholder="名前">
+  <div class="container">
+    <div id="output">
     </div>
-    <div>
-      <label for="comment">コメント</label>
-      <input type="text" name="comment" id="comment" placeholder="コメント" required>
-    </div>
-    <button type="submit">送信</button>
-  </form>
+    <form action="" method="post" name="keijibanForm">
+      <div class="form__item">
+        <label for="name">名前</label>
+        <input 
+        class="form__input"
+        type="text" 
+        name="name" 
+        id="name" 
+        placeholder="名前"
+        >
+      </div>
+      <div class="form__item">
+        <textarea 
+          name="comment" 
+          id="comment" 
+          class="form__textarea" 
+          placeholder="本文を入力してください" 
+          required
+        ></textarea>
+      </div>
+      <div class="form__item">
+        <button type="submit" class="form__btn">書き込む</button>
+      </div>
+    </form>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="js/common.js"></script>
   <script src="js/detail.js"></script>
