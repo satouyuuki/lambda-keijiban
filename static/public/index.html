@@ -6,39 +6,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
-  <title>画像掲示板</title>
+  <title>画像アップロード掲示板</title>
 </head>
 
 <body>
-  <form action="" method="post" name="keijibanForm">
-    <input type="file" id="file" name="file">
-    <div id="preview"></div>
-    <div>
-      <label for="name">名前</label>
-      <input type="text" name="name" id="name" placeholder="名前">
+  <div class="container">
+    <h1 class="heading1">画像アップロード掲示板</h1>
+    <form action="" method="post" name="keijibanForm">
+      <label for="file" class="file-uploader">
+        ファイルを選択して下さい
+        <input type="file" id="file" name="file">
+      </label>
+      <div id="preview"></div>
+      <div class="form__item">
+        <label for="name">名前</label>
+        <input 
+          class="form__input" 
+          type="text" 
+          name="name" 
+          id="name" 
+          placeholder="名前"
+        >
+      </div>
+      <div class="form__item">
+        <label for="textarea">詳細</label>
+        <textarea 
+          class="form__textarea"
+          name="text" 
+          id="textarea" 
+          placeholder="詳細" 
+          required
+        ></textarea>
+      </div>
+      <div class="form__item">
+        <label for="password">パスワード</label>
+        <input 
+          type="password" 
+          name="password" 
+          id="password" 
+          placeholder="パスワード"
+          required
+        >
+      </div>
+      <div class="form__item">
+        <label for="cookieFlag">cookieに保存</label>
+        <input type="checkbox" name="cookieFlag">
+      </div>
+      <button type="submit" class="form__btn">送信</button>
+    </form>
+  
+    <div id="output">
     </div>
-    <div>
-      <label for="textarea">詳細</label>
-      <textarea name="text" id="textarea" placeholder="詳細" required></textarea>
-    </div>
-    <div>
-      <label for="password">パスワード</label>
-      <input 
-        type="password" 
-        name="password" 
-        id="password" 
-        placeholder="パスワード"
-        required
-      >
-    </div>
-    <div>
-      <label for="cookieFlag">cookieに保存</label>
-      <input type="checkbox" name="cookieFlag">
-    </div>
-    <button type="submit">送信</button>
-  </form>
-
-  <div id="output">
   </div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="js/common.js"></script>

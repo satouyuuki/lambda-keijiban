@@ -1,3 +1,80 @@
+body {
+  margin: 0;
+  background: #ccc;
+}
+img {
+  width: 100%;
+  height: auto;
+}
+#preview {
+  width: 200px;
+  height: auto;
+}
+.container {
+  background-color: #f5f5dc;
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.heading1 {
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+}
+.card {
+  background: #ecece5;
+  margin: 30px 15px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, .1);
+  position: relative;
+  transition: 0.3s;
+}
+.card:hover {
+  bottom: 7px;
+  box-shadow: 0px 1px 20px 0px rgba(0, 0, 0, .2);
+}
+.card .card__while {
+  margin-bottom: 15px;
+}
 .textarea-div {
   white-space: pre-wrap;
+}
+.file-uploader {
+  padding: 5px;
+  color: #8b6060;
+  margin: 0 15px 15px;
+}
+.file-uploader input[type="file"] {
+  display: none;
+}
+.form__item {
+  margin: 0 15px 15px;
+}
+.form__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+.form__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  height: 80px;
+}
+.form__btn {
+  background: #00adff;
+  color: #fff;
+  border: none;
+  width: 100%;
+  font-size: 24px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 0px #006899;
+}
+.form__btn:active {
+  margin-top: 5px;
+  box-shadow: none;
+}
+.form__btn:focus {
+  outline: none;
 }

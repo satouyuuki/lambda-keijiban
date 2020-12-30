@@ -83,8 +83,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
       this.preview.innerHTML = '';
       const newPost = res.data;
       if (newPost.cookieFlag === 'on') {
-        const expires = 1000 * 60 * 60 * 1; // 1 hour
-        document.cookie = `password=${newPost.password}; expires=${expires};`;
+        KANIKEIJIBAN.COMMON.UTILS.setCookie(newPost.password);
       }
       this.posts.splice(0, 0, newPost);
       this.output.innerHTML = KANIKEIJIBAN.MAIN.VIEW.postsView(newPost) + this.output.innerHTML;
@@ -145,49 +144,49 @@ KANIKEIJIBAN.MAIN.VIEW = {
       imageObject.fileName = '';
     }
     const result = `
-      <div id="${post.id}">
-        <p>name: ${post.name}</p>
+      <div id="${post.id}" class="card">
+        <p>ネーム: ${post.name}</p>
         <div class="textarea-div">${post.text}</div>
+        <a href="./detail.html${query}">返信する</a>
         <p>作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
-        <a href="./detail.html${query}">${imageObject.text}</a>
-        <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editView(this.dataset.id)">更新</button>
-        <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.deleteView(this.dataset.id)">削除</button>
+        <p>${imageObject.text}</p>
+        <div class="card__while">
+          <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editView(this.dataset.id)">編集</button>
+          <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.deleteView(this.dataset.id)">削除</button>
+        </div>
       </div>
     `;
     return result;
   },
   deleteView: function (id) {
-    const target = document.getElementById(id);
     const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <input type="password" name="deletePass" value="${cookieValue}">
-      <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editCancel(this.dataset.id)">キャンセル</button>
-      <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.deletePost(this.dataset.id)">実行</button>
+    const text = `
+      <div class="card__while">
+        <label>パスワード: </label>
+        <input type="password" name="deletePass" value="${cookieValue}">
+      </div>
+      <div class="card__while">
+        <button onclick="KANIKEIJIBAN.COMMON.UTILS.inputCancel()">キャンセル</button>
+        <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.deletePost(this.dataset.id)">実行</button>
+      </div>
     `;
-    target.appendChild(div);
+    KANIKEIJIBAN.COMMON.UTILS.inputView(id, text);
   },
   editView: function (id) {
-    const targetElm = document.getElementById(id);
-    Array.prototype.forEach.call(targetElm.children, (item) => {
-      if (item.classList.contains('textarea-div')) {
-        const value = item.textContent;
-        const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
-        const div = document.createElement('div');
-        div.innerHTML = `
-          <textarea name="updateText" required>${value}</textarea>
-          <input type="password" name="updatePass" required value=${cookieValue}>
-          <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editCancel(this.dataset.id)">キャンセル</button>
-          <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.updatePost(this.dataset.id)">更新</button>
-        `;
-        targetElm.appendChild(div);
-      }
-    });
-  },
-  editCancel: function (id) {
-    const targetPost = KANIKEIJIBAN.MAIN.SERVER.posts.find((post) => post.id === id);
-    const targetElm = document.getElementById(id);
-    targetElm.outerHTML = this.postsView(targetPost);
+    const value = document.getElementById(id).querySelector('.textarea-div').textContent;
+    const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
+    const text = `
+      <textarea class="form__textarea" name="updateText" required>${value}</textarea>
+      <div class="card__while">
+        <label>パスワード: </label>
+        <input type="password" name="updatePass" required value=${cookieValue}>
+      </div>
+      <div class="card__while">
+        <button onclick="KANIKEIJIBAN.COMMON.UTILS.inputCancel()">キャンセル</button>
+        <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.updatePost(this.dataset.id)">更新</button>
+      </div>
+    `;
+    KANIKEIJIBAN.COMMON.UTILS.inputView(id, text);
   }
 };
 
