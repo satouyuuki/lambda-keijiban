@@ -7,18 +7,20 @@ const bucketName = process.env.imageUploadBucket;
 
 exports.handler = async (event, context, callback) => {
   const id = event.pathParameters.id;
-  const { fileName } = JSON.parse(event.body);
-  console.log('fileName = ', fileName);
-  if (fileName) {
-    const res = await S3.delete(fileName, bucketName).catch(err => {
-      console.log('error in S3 delete', err);
-      return null;
-    })
-    console.log('s3 res = ', res);
+  const { fileName, password } = JSON.parse(event.body);
+  try {
+    // dynamodbでdelete
+    const dbRes = await Dynamo.delete(id, TableName, password);
+    if (fileName) {
+      await S3.delete(fileName, bucketName)
+        .catch(err => {
+          console.log('error in S3 delete', err);
+          return null;
+        });
+    }
+    return Responses._200(dbRes.Attributes);
+  } catch (err) {
+    err.message = 'パスワードが違います';
+    return Responses._400(err);
   }
-  // return the data
-
-  const res = await Dynamo.delete(id, TableName);
-  console.log('res = ', res);
-  return Responses._200(res);
 }

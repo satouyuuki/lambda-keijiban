@@ -34,18 +34,21 @@ const Dynamo = {
     
     return data;
   },
-  update: async ({ id, tableName, updateKey, updateValue }) => {
+  update: async ({ id, tableName, updateKey, updateValue, conditionValue }) => {
     const params = {
       TableName: tableName,
       Key: {
         id
       },
       UpdateExpression: `set #tx = :updateValue`,
+      ConditionExpression: '#pass = :pass',
       ExpressionAttributeNames: {
-        '#tx': updateKey
+        '#tx': updateKey,
+        '#pass': 'password'
       },
       ExpressionAttributeValues: {
-        ':updateValue': updateValue
+        ':updateValue': updateValue,
+        ':pass': conditionValue
       },
       ReturnValues: 'ALL_NEW'
     };
@@ -80,16 +83,23 @@ const Dynamo = {
       .promise();
     return res;
   },
-  delete: async (id, TableName) => {
+  delete: async (id, TableName, password) => {
     const params = {
       TableName,
       Key: { id },
+      ConditionExpression: '#pass = :pass',
+      ExpressionAttributeNames: {
+        '#pass': 'password'
+      },
+      ExpressionAttributeValues: {
+        ':pass': password
+      },
       ReturnValues: 'ALL_OLD'
     };
     const data = await documentClient
       .delete(params)
       .promise();
-    return data.Attributes;
+    return data;
   },
   scan: async (TableName) => {
     const params = {

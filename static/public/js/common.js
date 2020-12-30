@@ -10,13 +10,20 @@ KANIKEIJIBAN.COMMON.CONSTANTS = {
 };
 
 KANIKEIJIBAN.COMMON.UTILS = {
-  japanDate: function (dataTime) {
+  japanDate: (dataTime) => {
     const date = new Date(dataTime);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    const day = date.getDay();
+    const day = date.getDate();
     const hours = date.getHours();
     const minites = date.getMinutes();
     return `${year}年${month}月${day}日${hours}時${minites}分`;
+  },
+  getCookie: () => {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(key => key.startsWith('password'))
+      .split('=')[1];
+    return cookieValue;
   }
 };

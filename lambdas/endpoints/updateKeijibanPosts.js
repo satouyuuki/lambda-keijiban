@@ -7,20 +7,19 @@ exports.handler = async (event, context, callback) => {
   const id = event.pathParameters.id;
 
   // return the data
-  const { text } = JSON.parse(event.body);
+  const { text, password } = JSON.parse(event.body);
   const updateParams = {
     id,
     tableName: TableName,
     updateKey: 'text',
-    updateValue: text
+    updateValue: text,
+    conditionValue: password
   };
-
-  const res = await Dynamo.update(updateParams).catch(err => {
-    console.log('update faild', err);
-    return null;
-  })
-  if (!res) {
-    return Responses._400({ message: 'response is null' });
+  try {
+    const res = await Dynamo.update(updateParams);
+    return Responses._200(res.Attributes);
+  } catch (err) {
+    err.message = 'パスワードが違います';
+    return Responses._400(err);
   }
-  return Responses._200(res.Attributes);
 }
