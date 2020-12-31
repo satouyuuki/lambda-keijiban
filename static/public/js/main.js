@@ -1,4 +1,6 @@
 'use strict';
+import COMMON from './common.js';
+import axios from 'axios';
 // 名前空間
 var KANIKEIJIBAN = KANIKEIJIBAN || {};
 KANIKEIJIBAN.MAIN = {};
@@ -30,7 +32,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
   },
   handleFileSelect: function (e) {
     const files = this.propsFile.files;
-    if (files[0].size > KANIKEIJIBAN.COMMON.CONSTANTS.IMG_SIZE_LIMIT) {
+    if (files[0].size > COMMON.CONSTANTS.IMG_SIZE_LIMIT) {
       alert('ファイルサイズは1MB以下にしてください');
       this.propsFile.value = '';
       return;
@@ -72,7 +74,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
   },
   getAllPosts: async function () {
     try {
-      const res = await axios.get(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts`);
+      const res = await axios.get(`${COMMON.CONSTANTS.URL}/posts`);
       res.data
         .sort((a, b) => a.date < b.date ? 1 : -1)
         .map((post) => {
@@ -93,13 +95,13 @@ KANIKEIJIBAN.MAIN.SERVER = {
         }
       }
       // ファイルデータ
-      const res = await axios.post(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts`, this.postData);
+      const res = await axios.post(`${COMMON.CONSTANTS.URL}/posts`, this.postData);
       // // フォームをリセット
       this.keijibanForm.reset();
       this.preview.innerHTML = '';
       const newPost = res.data;
       if (newPost.cookieFlag === 'on') {
-        KANIKEIJIBAN.COMMON.UTILS.setCookie(newPost.password);
+        COMMON.UTILS.setCookie(newPost.password);
       }
       this.posts.splice(0, 0, newPost);
       this.output.innerHTML = KANIKEIJIBAN.MAIN.VIEW.postsView(newPost) + this.output.innerHTML;
@@ -113,8 +115,8 @@ KANIKEIJIBAN.MAIN.SERVER = {
       if (!password) {
         alert('パスワードを入力してください');
       }
-      const fileName = KANIKEIJIBAN.COMMON.UTILS.getS3FileName(id, this.posts);
-      const res = await axios.delete(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${id}`, { data: { fileName, password } });
+      const fileName = COMMON.UTILS.getS3FileName(id, this.posts);
+      const res = await axios.delete(`${COMMON.CONSTANTS.URL}/posts/${id}`, { data: { fileName, password } });
       this.posts = this.posts
         .filter(({ id }) => id != res.data.id)
       const delElement = document.getElementById(id);
@@ -126,7 +128,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
   updatePost: async function (id) {
     const text = document.getElementsByName('updateText')[0].value;
     const password = document.getElementsByName('updatePass')[0].value;
-    const fileName = KANIKEIJIBAN.COMMON.UTILS.getS3FileName(id, this.posts);
+    const fileName = COMMON.UTILS.getS3FileName(id, this.posts);
     if (!text || !password) {
       alert('テキストとパスワードを入力してください');
       return;
@@ -136,7 +138,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
       this.updateData.password = password;
       this.updateData.fileName = fileName;
 
-      const res = await axios.put(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${id}`, this.updateData);
+      const res = await axios.put(`${COMMON.CONSTANTS.URL}/posts/${id}`, this.updateData);
       this.posts.map((post) => {
         if (post.id === res.data.id) {
           post.text = res.data.text;
@@ -168,7 +170,7 @@ KANIKEIJIBAN.MAIN.VIEW = {
         <p>ネーム: ${post.name}</p>
         <div class="textarea-div">${post.text}</div>
         <a href="./detail.html${query}">返信する</a>
-        <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
+        <p class="date">作成日: ${COMMON.UTILS.japanDate(post.date)}</p>
         <p>${imageObject.text}</p>
         <div class="card__while">
           <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editView(this.dataset.id)">編集</button>
@@ -179,22 +181,22 @@ KANIKEIJIBAN.MAIN.VIEW = {
     return result;
   },
   deleteView: function (id) {
-    const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
+    const cookieValue = COMMON.UTILS.getCookie();
     const text = `
       <div class="card__while">
         <label>パスワード: </label>
         <input type="password" name="deletePass" value="${cookieValue}">
       </div>
       <div class="card__while">
-        <button onclick="KANIKEIJIBAN.COMMON.UTILS.inputCancel()">キャンセル</button>
+        <button onclick="COMMON.UTILS.inputCancel()">キャンセル</button>
         <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.deletePost(this.dataset.id)">実行</button>
       </div>
     `;
-    KANIKEIJIBAN.COMMON.UTILS.inputView(id, text);
+    COMMON.UTILS.inputView(id, text);
   },
   editView: function (id) {
     const value = document.getElementById(id).querySelector('.textarea-div').textContent;
-    const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
+    const cookieValue = COMMON.UTILS.getCookie();
     const text = `
       <textarea class="form__textarea" name="updateText" required>${value}</textarea>
       <label for="updateFile" class="file-uploader">
@@ -208,11 +210,11 @@ KANIKEIJIBAN.MAIN.VIEW = {
         <input type="password" name="updatePass" required value=${cookieValue}>
       </div>
       <div class="card__while">
-        <button onclick="KANIKEIJIBAN.COMMON.UTILS.inputCancel()">キャンセル</button>
+        <button onclick="COMMON.UTILS.inputCancel()">キャンセル</button>
         <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.updatePost(this.dataset.id)">更新</button>
       </div>
     `;
-    KANIKEIJIBAN.COMMON.UTILS.inputView(id, text);
+    COMMON.UTILS.inputView(id, text);
     const file = document.getElementById('updateFile');
     const preview = document.getElementById('updatePreview');
     file.addEventListener('change', {

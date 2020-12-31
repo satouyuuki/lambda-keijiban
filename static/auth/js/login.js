@@ -1,3 +1,9 @@
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const { CognitoUserPool, CognitoUserAttribute, CognitoUser }  = require('amazon-cognito-identity-js');
+
+const AWS = require('aws-sdk');
+require('amazon-cognito-js');
+
 const poolData = {
   UserPoolId: "us-east-1_ded6avfBY",
   ClientId: "39aeqlpkm4sfkvqeo56mgp4o0"

@@ -1,4 +1,6 @@
 'use strict';
+import COMMON from './common.js';
+import axios from 'axios';
 // 名前空間
 var KANIKEIJIBAN = KANIKEIJIBAN || {};
 KANIKEIJIBAN.DETAIL = {};
@@ -19,7 +21,7 @@ KANIKEIJIBAN.DETAIL.SERVER = {
   },
   getPost: async function () {
     try {
-      const res = await axios.get(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${KANIKEIJIBAN.COMMON.CONSTANTS.ID}`);
+      const res = await axios.get(`${COMMON.CONSTANTS.URL}/posts/${COMMON.CONSTANTS.ID}`);
       this.postData = res.data;
       this.output.innerHTML = KANIKEIJIBAN.DETAIL.VIEW.postDetailView(this.postData);
       this.output.innerHTML += KANIKEIJIBAN.DETAIL.VIEW.postCommentsView(this.postData.comments);
@@ -37,7 +39,7 @@ KANIKEIJIBAN.DETAIL.SERVER = {
         postData[value[0]] = value[1];
       }
       // ファイルデータ
-      const res = await axios.put(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/comments/${KANIKEIJIBAN.COMMON.CONSTANTS.ID}`, postData);
+      const res = await axios.put(`${COMMON.CONSTANTS.URL}/posts/comments/${COMMON.CONSTANTS.ID}`, postData);
       // // フォームをリセット
       document.keijibanForm.reset();
       this.postData = res.data;
@@ -56,7 +58,7 @@ KANIKEIJIBAN.DETAIL.VIEW = {
       <p>id: ${post.id}</p>
       <p>ネーム: ${post.name}</p>
       <div class="textarea-div">${post.text}</div>
-      <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(post.date)}</p>
+      <p class="date">作成日: ${COMMON.UTILS.japanDate(post.date)}</p>
       ${imgContents}
     `;
     return result;
@@ -70,7 +72,7 @@ KANIKEIJIBAN.DETAIL.VIEW = {
         <p>id: ${commentID}</p>
         <p>ネーム: ${comment.name}</p>
         <div class="textarea-div">${comment.comment}</div>
-        <p class="date">作成日: ${KANIKEIJIBAN.COMMON.UTILS.japanDate(comment.date)}</p>
+        <p class="date">作成日: ${COMMON.UTILS.japanDate(comment.date)}</p>
       `;
     });
     return result;

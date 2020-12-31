@@ -1,4 +1,5 @@
 'use strict';
+import '../style.css';
 // 名前空間
 var KANIKEIJIBAN = KANIKEIJIBAN || {};
 KANIKEIJIBAN.COMMON = {};
@@ -51,3 +52,5 @@ KANIKEIJIBAN.COMMON.UTILS = {
     return targetPost.imageURL ? targetPost.imageURL.match(regex)[0] : '';
   }
 };
+
+export default KANIKEIJIBAN.COMMON;

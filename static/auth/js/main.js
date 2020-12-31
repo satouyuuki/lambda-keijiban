@@ -1,3 +1,10 @@
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const { CognitoUserPool, CognitoUserAttribute, CognitoUser } = require('amazon-cognito-identity-js');
+
+const AWS = require('aws-sdk');
+require('amazon-cognito-js');
+import axios from 'axios';
+
 const idToken = (() => {
   return location.hash.slice(1);
 })();
