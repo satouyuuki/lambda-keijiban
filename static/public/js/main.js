@@ -6,6 +6,7 @@ KANIKEIJIBAN.MAIN = {};
 KANIKEIJIBAN.MAIN.SERVER = {
   posts: [],
   postData: {},
+  updateData: {},
   init: async function () {
     this.setParameters();
     this.bindEvent();
@@ -19,40 +20,56 @@ KANIKEIJIBAN.MAIN.SERVER = {
   },
   bindEvent: function () {
     this.keijibanForm.addEventListener('submit', this.createPost.bind(this));
-    this.file.addEventListener('change', this.handleFileSelect.bind(this));
+    this.file.addEventListener('change', {
+      propsFile: this.file,
+      propsImageOutputElem: this.preview,
+      propsData: this.postData,
+      callback: this.previewFile,
+      handleEvent: this.handleFileSelect
+    });
   },
-  handleFileSelect: function () {
-    const files = this.file.files;
+  handleFileSelect: function (e) {
+    const files = this.propsFile.files;
     if (files[0].size > KANIKEIJIBAN.COMMON.CONSTANTS.IMG_SIZE_LIMIT) {
       alert('ファイルサイズは1MB以下にしてください');
-      this.file.value = '';
+      this.propsFile.value = '';
       return;
     }
-    this.previewFile(files[0]);
+    this.callback(files[0], this.propsImageOutputElem, this.propsData);
   },
-  previewFile: function (file) {
+  previewFile: function (file, preview, data) {
     const reader = new FileReader();
-    reader.onload = function (e) {
-      const imageUrl = e.target.result;
-      const fileData = this.customFileData(imageUrl);
-      Object.assign(this.postData, fileData);
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.id = 'imgData';
-      while (this.preview.firstChild) {
-        this.preview.removeChild(this.preview.firstChild);
-      }
-      this.preview.appendChild(img);
-    }
-    // thisをバインド
-    reader.onload = reader.onload.bind(this);
+    const mySelf = KANIKEIJIBAN.MAIN.SERVER;
+    reader.addEventListener('load', {
+      handleEvent: mySelf.readerLoad,
+      preview: preview,
+      data: data
+    });
+    // reader.onload = reader.onload.bind(this);
     reader.readAsDataURL(file);
   },
-  customFileData: function (imageUrl) {
+  readerLoad: function (e) {
+    const mySelf = KANIKEIJIBAN.MAIN.SERVER;
+    const imageUrl = e.target.result;
+    mySelf.customFileData(imageUrl, this.data);;
+    mySelf.previewFileImage(imageUrl, this.preview);
+  },
+  customFileData: function (imageUrl, data) {
     const parts = imageUrl.split(';');
     const mime = parts[0].split(':')[1];
     const image = parts[1];
-    return { mime, image };
+    data.mime = mime;
+    data.image = image;
+  },
+  previewFileImage: function (imageUrl, imageOutputElm) {
+    console.log(imageOutputElm);
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.id = 'imgData';
+    while (imageOutputElm.firstChild) {
+      imageOutputElm.removeChild(imageOutputElm.firstChild);
+    }
+    imageOutputElm.appendChild(img);
   },
   getAllPosts: async function () {
     try {
@@ -97,9 +114,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
       if (!password) {
         alert('パスワードを入力してください');
       }
-      const targetPost = this.posts.find(post => post.id === id);
-      const regex = /([^\/]+)[^/]+$/g;
-      const fileName = targetPost.imageURL ? targetPost.imageURL.match(regex)[0] : '';
+      const fileName = KANIKEIJIBAN.COMMON.UTILS.getS3FileName(id, this.posts);
       const res = await axios.delete(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${id}`, { data: { fileName, password } });
       this.posts = this.posts
         .filter(({ id }) => id != res.data.id)
@@ -112,15 +127,21 @@ KANIKEIJIBAN.MAIN.SERVER = {
   updatePost: async function (id) {
     const text = document.getElementsByName('updateText')[0].value;
     const password = document.getElementsByName('updatePass')[0].value;
+    const fileName = KANIKEIJIBAN.COMMON.UTILS.getS3FileName(id, this.posts);
     if (!text || !password) {
       alert('テキストとパスワードを入力してください');
       return;
     }
     try {
-      const res = await axios.put(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${id}`, { text, password });
+      this.updateData.text = text;
+      this.updateData.password = password;
+      this.updateData.fileName = fileName;
+
+      const res = await axios.put(`${KANIKEIJIBAN.COMMON.CONSTANTS.URL}/posts/${id}`, this.updateData);
       this.posts.map((post) => {
         if (post.id === res.data.id) {
           post.text = res.data.text;
+          post.imageURL = res.data.imageURL;
           const targetElm = document.getElementById(post.id);
           targetElm.outerHTML = KANIKEIJIBAN.MAIN.VIEW.postsView(post);
         }
@@ -177,6 +198,12 @@ KANIKEIJIBAN.MAIN.VIEW = {
     const cookieValue = KANIKEIJIBAN.COMMON.UTILS.getCookie();
     const text = `
       <textarea class="form__textarea" name="updateText" required>${value}</textarea>
+      <label for="updateFile" class="file-uploader">
+        ファイルを選択して下さい
+        <input type="file" id="updateFile" name="updateFile">
+      </label>
+      <div id="updatePreview"></div>
+
       <div class="card__while">
         <label>パスワード: </label>
         <input type="password" name="updatePass" required value=${cookieValue}>
@@ -187,6 +214,15 @@ KANIKEIJIBAN.MAIN.VIEW = {
       </div>
     `;
     KANIKEIJIBAN.COMMON.UTILS.inputView(id, text);
+    const file = document.getElementById('updateFile');
+    const preview = document.getElementById('updatePreview');
+    file.addEventListener('change', {
+      propsFile: file,
+      propsImageOutputElem: preview,
+      propsData: KANIKEIJIBAN.MAIN.SERVER.updateData,
+      callback: KANIKEIJIBAN.MAIN.SERVER.previewFile,
+      handleEvent: KANIKEIJIBAN.MAIN.SERVER.handleFileSelect
+    });
   }
 };
 

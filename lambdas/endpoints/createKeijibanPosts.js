@@ -1,14 +1,15 @@
 const Responses = require('../common/API_Responses');
 const Dynamo = require('../common/Dynamo');
 const S3 = require('../common/S3');
-const fileType = require('file-type');
+// const fileType = require('file-type');
 const { v4: uuid } = require('uuid');
 
-const allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
+// const allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
 const tableName = process.env.tableName;
 const bucketName = process.env.imageUploadBucket;
 
 exports.handler = async (event, context, callback) => {
+  console.log('event = ', event);
   try {
     const body = JSON.parse(event.body);
     if (!body || !body.text || !body.password) {
@@ -23,36 +24,14 @@ exports.handler = async (event, context, callback) => {
     dbObject.date = new Date().getTime();
     dbObject.comments = {};
 
-    if (body.image || body.mime) {
-      if (!allowedMimes.includes(body.mime)) {
-        return Responses._400({ message: 'mime is not allow type' });
-      }
-      let imageData = body.image;
-
-      if (body.image.substr(0, 7) === 'base64,') {
-        imageData = body.image.substr(7, body.image.length);
-      }
-
-      const buffer = Buffer.from(imageData, 'base64');
-      const fileInfo = await fileType.fromBuffer(buffer);
-      const detectedExt = fileInfo.ext;
-      const detectedMime = fileInfo.mime;
-
-      if (detectedMime !== body.mime) {
-        return Responses._400({ message: 'mime types dont match' });
-      }
-
-      const name = uuid();
-      const key = `${name}.${detectedExt}`;
-      await S3.write(
+    if (body.image && body.mime) {
+      const s3Res = await S3.write(
         bucketName,
-        buffer,
-        key,
-        detectedMime
+        body.mime,
+        body.image,
       );
+      dbObject.imageURL = s3Res;
 
-      const url = `https://${process.env.imageUploadBucket}.s3.${process.env.region}.amazonaws.com/${key}`;
-      dbObject.imageURL = url;
     }
     const newPost = await Dynamo.put(dbObject, tableName).catch(err => {
       console.log('error in dynamo write', err);

@@ -44,5 +44,10 @@ KANIKEIJIBAN.COMMON.UTILS = {
   inputCancel: () => {
     const inputMode = document.getElementById('inputMode');
     inputMode.remove();
+  },
+  getS3FileName: (id, posts) => {
+    const targetPost = posts.find(post => post.id === id);
+    const regex = /([^\/]+)[^/]+$/g;
+    return targetPost.imageURL ? targetPost.imageURL.match(regex)[0] : '';
   }
 };

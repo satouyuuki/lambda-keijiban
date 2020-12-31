@@ -34,21 +34,23 @@ const Dynamo = {
     
     return data;
   },
-  update: async ({ id, tableName, updateKey, updateValue, conditionValue }) => {
+  update: async ({ id, tableName, updateValue }) => {
     const params = {
       TableName: tableName,
       Key: {
         id
       },
-      UpdateExpression: `set #tx = :updateValue`,
+      UpdateExpression: `set #tx = :text, #imageURL = :imageURL`,
       ConditionExpression: '#pass = :pass',
       ExpressionAttributeNames: {
-        '#tx': updateKey,
+        '#tx': 'text',
+        '#imageURL': 'imageURL',
         '#pass': 'password'
       },
       ExpressionAttributeValues: {
-        ':updateValue': updateValue,
-        ':pass': conditionValue
+        ':text': updateValue.text,
+        ':imageURL': updateValue.imageURL,
+        ':pass': updateValue.password
       },
       ReturnValues: 'ALL_NEW'
     };
