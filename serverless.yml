@@ -42,9 +42,9 @@ custom:
   authAliasCloudFrontName: dv0xr1eg6kdkg.cloudfront.net
   syncS3Buckets:
     - bucketRef: KaniKeijibanWebSitev2
-      localDir: static/public
+      localDir: dist/public
     - bucketRef: KaniKeijibanAdminWebSite
-      localDir: static/auth
+      localDir: dist/auth
   tableName: KaniPosts
 
 functions:

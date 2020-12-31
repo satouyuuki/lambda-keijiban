@@ -79,7 +79,10 @@ KANIKEIJIBAN.MAIN.SERVER = {
         .sort((a, b) => a.date < b.date ? 1 : -1)
         .map((post) => {
           this.posts.push(post);
-          this.output.innerHTML += KANIKEIJIBAN.MAIN.VIEW.postsView(post);
+          const postDiv = KANIKEIJIBAN.MAIN.VIEW.postsView(post);
+          this.output.appendChild(postDiv);
+          // const targetDiv = document.getElementById(post.id).querySelector('.card__while');
+          KANIKEIJIBAN.MAIN.VIEW.createEditModeBtn(post.id);
         })
     } catch (err) {
       console.log('err', err);
@@ -104,47 +107,55 @@ KANIKEIJIBAN.MAIN.SERVER = {
         COMMON.UTILS.setCookie(newPost.password);
       }
       this.posts.splice(0, 0, newPost);
-      this.output.innerHTML = KANIKEIJIBAN.MAIN.VIEW.postsView(newPost) + this.output.innerHTML;
+      const postDiv = KANIKEIJIBAN.MAIN.VIEW.postsView(newPost);
+      this.output.insertBefore(postDiv, this.output.firstChild);
+      KANIKEIJIBAN.MAIN.VIEW.createEditModeBtn(newPost.id);
+
     } catch (err) {
       console.log('err', err);
     }
   },
-  deletePost: async function(id) {
+  deletePost: async function(e) {
     try {
       const password = document.getElementsByName('deletePass')[0].value;
       if (!password) {
         alert('パスワードを入力してください');
       }
-      const fileName = COMMON.UTILS.getS3FileName(id, this.posts);
-      const res = await axios.delete(`${COMMON.CONSTANTS.URL}/posts/${id}`, { data: { fileName, password } });
-      this.posts = this.posts
+      const mySelf = KANIKEIJIBAN.MAIN.SERVER;
+      const fileName = COMMON.UTILS.getS3FileName(this.id, mySelf.posts);
+      const res = await axios.delete(`${COMMON.CONSTANTS.URL}/posts/${this.id}`, { data: { fileName, password } });
+      mySelf.posts = mySelf.posts
         .filter(({ id }) => id != res.data.id)
-      const delElement = document.getElementById(id);
+      const delElement = document.getElementById(this.id);
       delElement.remove();
     } catch (err) {
       alert(err.response.data.message);
     }
   },
-  updatePost: async function (id) {
+  updatePost: async function (e) {
+    const mySelf = KANIKEIJIBAN.MAIN.SERVER;
     const text = document.getElementsByName('updateText')[0].value;
     const password = document.getElementsByName('updatePass')[0].value;
-    const fileName = COMMON.UTILS.getS3FileName(id, this.posts);
+    const fileName = COMMON.UTILS.getS3FileName(this.id, mySelf.posts);
     if (!text || !password) {
       alert('テキストとパスワードを入力してください');
       return;
     }
     try {
-      this.updateData.text = text;
-      this.updateData.password = password;
-      this.updateData.fileName = fileName;
-
-      const res = await axios.put(`${COMMON.CONSTANTS.URL}/posts/${id}`, this.updateData);
-      this.posts.map((post) => {
+      mySelf.updateData.text = text;
+      mySelf.updateData.password = password;
+      mySelf.updateData.fileName = fileName;
+      const res = await axios.put(`${COMMON.CONSTANTS.URL}/posts/${this.id}`, mySelf.updateData);
+      mySelf.posts.map((post) => {
         if (post.id === res.data.id) {
           post.text = res.data.text;
           post.imageURL = res.data.imageURL;
           const targetElm = document.getElementById(post.id);
-          targetElm.outerHTML = KANIKEIJIBAN.MAIN.VIEW.postsView(post);
+          const postDiv = KANIKEIJIBAN.MAIN.VIEW.postsView(post);
+          targetElm.parentNode.insertBefore(postDiv, targetElm);
+          targetElm.remove();
+          KANIKEIJIBAN.MAIN.VIEW.createEditModeBtn(post.id);
+
         }
       });
     } catch (err) {
@@ -154,6 +165,17 @@ KANIKEIJIBAN.MAIN.SERVER = {
 };
 
 KANIKEIJIBAN.MAIN.VIEW = {
+  createEditModeBtn: (id) => {
+    const targetDiv = document.getElementById(id).querySelector('.card__while');
+    const button1 = document.createElement('button');
+    const button2 = document.createElement('button');
+    button1.textContent = '編集';
+    button2.textContent = '削除';
+    button1.addEventListener('click', { id, handleEvent: KANIKEIJIBAN.MAIN.VIEW.editView });
+    button2.addEventListener('click', { id, handleEvent: KANIKEIJIBAN.MAIN.VIEW.deleteView });
+    targetDiv.appendChild(button1);
+    targetDiv.appendChild(button2);
+  },
   postsView: function (post) {
     const query = `?id=${post.id}`;
     const imageObject = {};
@@ -165,37 +187,43 @@ KANIKEIJIBAN.MAIN.VIEW = {
       imageObject.text = '<p>画像はありません</p>';
       imageObject.fileName = '';
     }
-    const result = `
-      <div id="${post.id}" class="card">
-        <p>ネーム: ${post.name}</p>
-        <div class="textarea-div">${post.text}</div>
-        <a href="./detail.html${query}">返信する</a>
-        <p class="date">作成日: ${COMMON.UTILS.japanDate(post.date)}</p>
-        <p>${imageObject.text}</p>
-        <div class="card__while">
-          <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.editView(this.dataset.id)">編集</button>
-          <button data-id="${post.id}" onclick="KANIKEIJIBAN.MAIN.VIEW.deleteView(this.dataset.id)">削除</button>
-        </div>
-      </div>
+    const div = document.createElement('div');
+    div.id = post.id;
+    div.classList.add('card');
+    div.innerHTML = `
+      <p>ネーム: ${post.name}</p>
+      <div class="textarea-div">${post.text}</div>
+      <a href="./detail.html${query}">返信する</a>
+      <p class="date">作成日: ${COMMON.UTILS.japanDate(post.date)}</p>
+      <p>${imageObject.text}</p>
+      <div class="card__while"></div>
     `;
-    return result;
+    return div;
+    // output.appendChild(div);
   },
-  deleteView: function (id) {
+  deleteView: function (e) {
     const cookieValue = COMMON.UTILS.getCookie();
     const text = `
       <div class="card__while">
         <label>パスワード: </label>
         <input type="password" name="deletePass" value="${cookieValue}">
       </div>
-      <div class="card__while">
-        <button onclick="COMMON.UTILS.inputCancel()">キャンセル</button>
-        <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.deletePost(this.dataset.id)">実行</button>
-      </div>
+      <div class="card__while editModeBtn"></div>
     `;
-    COMMON.UTILS.inputView(id, text);
+    COMMON.UTILS.inputView(this.id, text);
+    const targetDiv = document.getElementById(this.id).querySelector('.editModeBtn');
+    const button1 = document.createElement('button');
+    const button2 = document.createElement('button');
+    button1.textContent = 'キャンセル';
+    button2.textContent = '実行';
+    button1.addEventListener('click', { handleEvent: COMMON.UTILS.inputCancel });
+    button2.addEventListener('click', { id: this.id, handleEvent: KANIKEIJIBAN.MAIN.SERVER.deletePost });
+    targetDiv.appendChild(button1);
+    targetDiv.appendChild(button2);
+
   },
-  editView: function (id) {
-    const value = document.getElementById(id).querySelector('.textarea-div').textContent;
+  editView: function (e) {
+    const value = document.getElementById(this.id).querySelector('.textarea-div').textContent;
     const cookieValue = COMMON.UTILS.getCookie();
     const text = `
       <textarea class="form__textarea" name="updateText" required>${value}</textarea>
@@ -209,12 +237,9 @@ KANIKEIJIBAN.MAIN.VIEW = {
         <label>パスワード: </label>
         <input type="password" name="updatePass" required value=${cookieValue}>
       </div>
-      <div class="card__while">
-        <button onclick="COMMON.UTILS.inputCancel()">キャンセル</button>
-        <button data-id="${id}" onclick="KANIKEIJIBAN.MAIN.SERVER.updatePost(this.dataset.id)">更新</button>
-      </div>
+      <div class="card__while editModeBtn"></div>
     `;
-    COMMON.UTILS.inputView(id, text);
+    COMMON.UTILS.inputView(this.id, text);
     const file = document.getElementById('updateFile');
     const preview = document.getElementById('updatePreview');
     file.addEventListener('change', {
@@ -224,6 +249,17 @@ KANIKEIJIBAN.MAIN.VIEW = {
       callback: KANIKEIJIBAN.MAIN.SERVER.previewFile,
       handleEvent: KANIKEIJIBAN.MAIN.SERVER.handleFileSelect
     });
+
+    const targetDiv = document.getElementById(this.id).querySelector('.editModeBtn');
+    const button1 = document.createElement('button');
+    const button2 = document.createElement('button');
+    button1.textContent = 'キャンセル';
+    button2.textContent = '更新';
+    button1.addEventListener('click', { handleEvent: COMMON.UTILS.inputCancel });
+    button2.addEventListener('click', { id: this.id, handleEvent: KANIKEIJIBAN.MAIN.SERVER.updatePost });
+    targetDiv.appendChild(button1);
+    targetDiv.appendChild(button2);
+
   }
 };
 

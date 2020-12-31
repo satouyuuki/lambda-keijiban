@@ -24,7 +24,16 @@ KANIKEIJIBAN.DETAIL.SERVER = {
       const res = await axios.get(`${COMMON.CONSTANTS.URL}/posts/${COMMON.CONSTANTS.ID}`);
       this.postData = res.data;
       this.output.innerHTML = KANIKEIJIBAN.DETAIL.VIEW.postDetailView(this.postData);
-      this.output.innerHTML += KANIKEIJIBAN.DETAIL.VIEW.postCommentsView(this.postData.comments);
+
+      if (!Object.keys(this.postData.comments).length) return;
+      Object.values(this.postData.comments)
+        .sort((a, b) => {
+          if (a.date < b.date) return -1;
+          else 1;
+        })
+        .map((comment) => {
+          this.output.innerHTML += KANIKEIJIBAN.DETAIL.VIEW.postCommentsView(comment);
+        })
     } catch (err) {
       console.log('err', err);
     }    
@@ -42,9 +51,9 @@ KANIKEIJIBAN.DETAIL.SERVER = {
       const res = await axios.put(`${COMMON.CONSTANTS.URL}/posts/comments/${COMMON.CONSTANTS.ID}`, postData);
       // // フォームをリセット
       document.keijibanForm.reset();
+      const newCommentKey = Object.keys(res.data.comments).filter(i => Object.keys(this.postData.comments).indexOf(i) === -1);
+      this.output.innerHTML += KANIKEIJIBAN.DETAIL.VIEW.postCommentsView(res.data.comments[newCommentKey]);
       this.postData = res.data;
-      this.output.innerHTML = KANIKEIJIBAN.DETAIL.VIEW.postDetailView(this.postData);
-      this.output.innerHTML += KANIKEIJIBAN.DETAIL.VIEW.postCommentsView(this.postData.comments);
     } catch (err) {
       console.log('err', err);
     }
@@ -63,18 +72,12 @@ KANIKEIJIBAN.DETAIL.VIEW = {
     `;
     return result;
   },
-  postCommentsView: function (comments) {
-    if (!Object.keys(comments).length) return '';
-    let result = '';
-    Object.keys(comments).forEach(commentID => {
-      const comment = comments[commentID];
-      result += `
-        <p>id: ${commentID}</p>
-        <p>ネーム: ${comment.name}</p>
-        <div class="textarea-div">${comment.comment}</div>
-        <p class="date">作成日: ${COMMON.UTILS.japanDate(comment.date)}</p>
-      `;
-    });
+  postCommentsView: function (comment) {
+    const result = `
+      <p>ネーム: ${comment.name}</p>
+      <div class="textarea-div">${comment.comment}</div>
+      <p class="date">作成日: ${COMMON.UTILS.japanDate(comment.date)}</p>
+    `;
     return result;
   }
 };

@@ -1,9 +1,9 @@
 {
   "license": "UNLICENSED",
   "scripts": {
-    "build-dev": "WEBPACK_ENV=development ./node_modules/.bin/webpack --color --config webpack.config.js",
+    "build-dev": "WEBPACK_ENV=development ./node_modules/.bin/webpack --color --config webpack.config.js --watch",
     "build-prod": "WEBPACK_ENV=production ./node_modules/.bin/webpack --color --config webpack.config.js",
-    "start": "webpack-cli serve --mode development --watch"
+    "start": "./node_modules/.bin/webpack serve --config webpack.config.js"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",

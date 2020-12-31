@@ -35,6 +35,7 @@ const Dynamo = {
     return data;
   },
   update: async ({ id, tableName, updateValue }) => {
+    console.log({ id, tableName, updateValue });
     const params = {
       TableName: tableName,
       Key: {

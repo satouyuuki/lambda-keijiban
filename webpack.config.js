@@ -2,7 +2,6 @@ const path = require('path');
 const isDevelopment = process.env.WEBPACK_ENV === 'development';
 // const glob = require("glob");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); 
-// const authJS = glob.sync("./static/auth/js/*.js");
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {

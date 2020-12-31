@@ -1,16 +1,16 @@
 'use strict';
 import '../style.css';
 // 名前空間
-var KANIKEIJIBAN = KANIKEIJIBAN || {};
-KANIKEIJIBAN.COMMON = {};
+// var KANIKEIJIBAN = KANIKEIJIBAN || {};
+const COMMON = {};
 
-KANIKEIJIBAN.COMMON.CONSTANTS = {
+COMMON.CONSTANTS = {
   URL: 'https://lr1ufll9if.execute-api.us-east-1.amazonaws.com/test/api',
   ID: decodeURI(window.location.search).split('=')[1],
   IMG_SIZE_LIMIT: 1024 * 1024 * 1,
 };
 
-KANIKEIJIBAN.COMMON.UTILS = {
+COMMON.UTILS = {
   japanDate: (dataTime) => {
     const date = new Date(dataTime);
     const year = date.getFullYear();
@@ -21,6 +21,7 @@ KANIKEIJIBAN.COMMON.UTILS = {
     return `${year}年${month}月${day}日${hours}時${minites}分`;
   },
   getCookie: () => {
+    if (!document.cookie) return '';
     const cookieValue = document.cookie
       .split('; ')
       .find(key => key.startsWith('password'))
@@ -53,4 +54,4 @@ KANIKEIJIBAN.COMMON.UTILS = {
   }
 };
 
-export default KANIKEIJIBAN.COMMON;
+export default COMMON;

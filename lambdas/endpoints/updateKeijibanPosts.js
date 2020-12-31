@@ -12,6 +12,8 @@ exports.handler = async (event, context, callback) => {
     const updateData = {};
     updateData.text = body.text;
     updateData.password = body.password;
+    updateData.imageURL = !body.fileName ? '' : `https://${process.env.imageUploadBucket}.s3.${process.env.region}.amazonaws.com/${body.fileName}`;
+    console.log(updateData.imageURL);
     if (body.image && body.mime) {
       const s3Res = await S3.update(
         bucketName,
