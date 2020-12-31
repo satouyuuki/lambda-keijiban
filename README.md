@@ -123,3 +123,7 @@ webpack: 難読化/パフォーマンス向上のため
 - javascriptにて
   - webpack4を導入したらテンプレートリテラルの中のonclickがエラーになった。addEventListenerで対応。
   - addEventListenerの関数に引数を与えようとしたらthisがぐちゃぐちゃになった。
+
+### 参考にさせていただいたサイト
+https://kochama.online/thread
+https://photobb.net/bbs.cgi?id=10170
