@@ -7,15 +7,62 @@
 ### 構成図
 ![aws構成図](LT_IMAGE/kanikeijibanv3.png)
 
-## どんなことができる？
-- 画像のアップロード※画像となまえは必須ではない
-- 編集・削除をするには自分で設定したパスワードが必要
+## 仕様
+- ドメイン
+  - ユーザー用: https://yuuki-aws-dev.work
+  - 管理者用: https://admin.yuuki-aws-dev.work(基本的に管理者しか見れない)
+- ユーザー側
+  - 画像のアップロードができる※画像と名前は任意
+  - 投稿にはパスワードが必須
+  - 記事の投稿時にパスワードをcookieに保存するか選べる
+  - cookieの有効期限は1時間
+  - 投稿を削除・編集するにはパスワードを入力しないといけない
+  - 編集では画像と投稿内容の編集ができる
+  - 投稿内容にコメントが送信できる
+- 管理者側
+  - emailとpasswordでログインができる
+  - 未ログイン時は/login.htmlにリダイレクトされる
+  - 管理者はどの投稿もパスワードなしで削除ができる
 
-### ローカル環境
+### 各種バージョン
 ```
 yarn: v1.22.4
 node: v12.1.0
 serverless 2.12.0
+```
+
+### 事前に必要なもの
+- route53のホストゾーンにドメインを登録する
+- acmをドメインと*.ドメインの二つ登録する
+- ターミナルで以下を打ち込む(環境変数にacmを登録)
+```
+例
+export ACM_ARN=arn:aws:acm:us-east-1:111111111:certificate/111111111-1111-1111-1111-11111111111
+```
+
+### 使い方
+```
+- 開発用
+staticディレクトリの変更をwatchして、/distにバンドルファイルを出力してくれる
+$ yarn build-dev
+
+別ターミナルでローカルサーバーを立ち上げる
+$ yarn start
+
+- 本番用
+/distに本番用のバンドルファイルを出力してくれる
+$ yarn build-prod
+
+- serverless frameworkのコマンド
+
+serverless.ymlファイルを全てデプロイ
+$ sls deploy -v
+
+lambdaファイルをデプロイ
+$ sls deploy function -f ファンクション名
+
+静的ファイルをデプロイ
+$ sls syncToS3
 ```
 
 ## 使用技術
@@ -37,7 +84,7 @@ serverless 2.12.0
 - cloudfront
   - s3のwebホスティングをSSL化
 
-* dbスキーマ
+* DBのスキーマ
 ```
 id: string(uuid)
 date: number(UTC時間)
@@ -65,7 +112,14 @@ webpack: 難読化/パフォーマンス向上のため
 - cookieのパスワードをハッシュ化する
 - lambdaとフロントエンドをTypescriptにする
 - コメントも削除と更新ができるようにする
+- api gatewayのURLを独自ドメインにする
 - ページネーションが必要
+- serverless.ymlファイルが長くなってきたのでファイル分割する
 
-### 問題点
-- webpackにした瞬間テンプレートリテラルの中のonclickがエラーになった。addEventListenerにする対応をする
+### 注意点/問題点
+- serverless frameworkにて
+  - cognitoのカスタムドメインはハードコーディング(git issue未解決のため)
+  - 
+- javascriptにて
+  - webpack4を導入したらテンプレートリテラルの中のonclickがエラーになった。addEventListenerで対応。
+  - addEventListenerの関数に引数を与えようとしたらthisがぐちゃぐちゃになった。
