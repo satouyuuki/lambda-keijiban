@@ -3,7 +3,6 @@ const Dynamo = require('../common/Dynamo');
 const TableName = process.env.tableName;
 
 exports.handler = async (event, context, callback) => {
-  console.log('event', event);
 
   if (!event.pathParameters || !event.pathParameters.id) {
     // idが渡されて無い

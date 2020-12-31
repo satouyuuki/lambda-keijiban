@@ -62,7 +62,6 @@ KANIKEIJIBAN.MAIN.SERVER = {
     data.image = image;
   },
   previewFileImage: function (imageUrl, imageOutputElm) {
-    console.log(imageOutputElm);
     const img = document.createElement("img");
     img.src = imageUrl;
     img.id = 'imgData';

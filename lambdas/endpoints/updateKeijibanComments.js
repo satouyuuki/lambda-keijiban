@@ -4,7 +4,6 @@ const Responses = require('../common/API_Responses');
 const TableName = process.env.tableName;
 
 exports.handler = async (event, context, callback) => {
-  console.log('event = ', event);
   const id = event.pathParameters.id;
 
   const comments = JSON.parse(event.body);

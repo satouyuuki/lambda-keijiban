@@ -9,7 +9,6 @@ const tableName = process.env.tableName;
 const bucketName = process.env.imageUploadBucket;
 
 exports.handler = async (event, context, callback) => {
-  console.log('event = ', event);
   try {
     const body = JSON.parse(event.body);
     if (!body || !body.text || !body.password) {

@@ -5,7 +5,6 @@ const TableName = process.env.tableName;
 const bucketName = process.env.imageUploadBucket;
 exports.handler = async (event, context, callback) => {
   try {
-    console.log('event = ', event);
     const id = event.pathParameters.id;
   
     // return the data
@@ -14,7 +13,6 @@ exports.handler = async (event, context, callback) => {
     updateData.text = body.text;
     updateData.password = body.password;
     if (body.image && body.mime) {
-      console.log('hogehoge');
       const s3Res = await S3.update(
         bucketName,
         body.mime,

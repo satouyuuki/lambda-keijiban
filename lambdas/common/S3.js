@@ -38,13 +38,9 @@ const S3 = {
     if (!newData) {
       throw Error('there was an error writing the file');
     }
-    console.log('newData = ', newData);
     return `https://${process.env.imageUploadBucket}.s3.${process.env.region}.amazonaws.com/${key}`;
-    // return newData;
   },
   async update(bucket, mime, image, fileName) {
-    console.log('update');
-    console.log({ bucket, mime, image, fileName });
     if (!allowedMimes.includes(mime)) {
       throw Error('mime is not allow type');
     }
@@ -63,7 +59,6 @@ const S3 = {
       throw Error('mime types dont match');
     }
     const key = !fileName ? uuid() + '.' + detectedExt : fileName;
-    console.log('key = ', key);
     const params = {
       Bucket: bucket,
       Body: buffer,
@@ -76,19 +71,16 @@ const S3 = {
     if (!newData) {
       throw Error('there was an error writing the file');
     }
-    console.log('newData = ', newData);
     return `https://${bucket}.s3.${process.env.region}.amazonaws.com/${key}`;
     // return newData;
   },
   async delete(fileName, bucket) {
-    console.log('filename, bucket = ', fileName, bucket);
     const params = {
       Bucket: bucket,
       Key: fileName
     };
 
     const response = await s3Client.deleteObject(params).promise();
-    console.log('response = ', response);
 
     if (!response) {
       throw Error('there was an error writing the file');
