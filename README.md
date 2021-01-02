@@ -50,14 +50,8 @@ $ yarn build-dev
 別ターミナルでローカルサーバーを立ち上げる
 $ yarn start
 
-- 本番用
-/distに本番用のバンドルファイルを出力してくれる
-$ yarn build-prod
-
-- serverless frameworkのコマンド
-
-serverless.ymlファイルを全てデプロイ
-$ sls deploy -v
+- 本番にデプロイ
+$ yarn deploy
 
 lambdaファイルをデプロイ
 $ sls deploy function -f ファンクション名
