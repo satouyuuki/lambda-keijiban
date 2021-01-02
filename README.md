@@ -21,6 +21,7 @@
   - 投稿内容にコメントが送信できる
 - 管理者側
   - emailとpasswordでログインができる
+  - 管理画面からログアウトができる
   - 未ログイン時は/login.htmlにリダイレクトされる
   - 管理者はどの投稿もパスワードなしで削除ができる
 
@@ -118,10 +119,9 @@ webpack: 難読化/パフォーマンス向上のため
 
 ### 注意点/問題点
 - serverless frameworkにて
-  - cognitoのカスタムドメインはハードコーディング(git issue未解決のため)
-  - 
+  - cognitoのカスタムドメインはハードコーディング。UserPoolDomainのGetAttで返り値の設定がされていないため
 - javascriptにて
-  - webpack4を導入したらテンプレートリテラルの中のonclickがエラーになった。addEventListenerで対応。
+  - webpack4を導入後にテンプレートリテラルの中のonclickがエラーになった。
   - addEventListenerの関数に引数を与えようとしたらthisがぐちゃぐちゃになった。
 
 ### 参考にさせていただいたサイト

@@ -1,8 +1,6 @@
 const path = require('path');
 const isDevelopment = process.env.WEBPACK_ENV === 'development';
-// const glob = require("glob");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin'); 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: process.env.WEBPACK_ENV,
@@ -44,7 +42,6 @@ module.exports = {
       filename: './auth/login.html',
       template: './static/auth/login.html'
     }),
-    new CleanWebpackPlugin()
   ],
   devServer: {
     contentBase: path.join(__dirname, 'dist/public')

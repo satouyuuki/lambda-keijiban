@@ -104,6 +104,18 @@ const Dynamo = {
       .promise();
     return data;
   },
+  adminDelete: async (id, TableName) => {
+    const params = {
+      TableName,
+      Key: { id },
+      ReturnValues: 'ALL_OLD'
+    };
+    console.log('parems = ', params);
+    const data = await documentClient
+      .delete(params)
+      .promise();
+    return data;
+  },
   scan: async (TableName) => {
     const params = {
       TableName

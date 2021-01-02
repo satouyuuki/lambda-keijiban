@@ -3,17 +3,17 @@
   "scripts": {
     "build-dev": "WEBPACK_ENV=development ./node_modules/.bin/webpack --color --config webpack.config.js --watch",
     "build-prod": "WEBPACK_ENV=production ./node_modules/.bin/webpack --color --config webpack.config.js",
-    "start": "./node_modules/.bin/webpack serve --config webpack.config.js"
+    "start": "./node_modules/.bin/webpack serve --config webpack.config.js",
+    "deploy": "yarn build-prod && sls deploy -v"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
     "html-webpack-plugin": "^4.5.0",
     "serverless-sync-s3buckets": "^1.0.1",
+    "serverless-webpack": "^5.3.5",
     "style-loader": "^2.0.0",
     "webpack": "^4.44.1",
-    "webpack-cli": "^4.3.0",
-    "webpack-dev-server": "^3.11.1"
+    "webpack-cli": "^4.3.0"
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^4.5.6",
@@ -21,7 +21,6 @@
     "aws-sdk": "^2.819.0",
     "axios": "^0.21.1",
     "file-type": "^16.0.1",
-    "glob": "^7.1.6",
     "uuid": "^8.3.2"
   },
   "version": "v1.22.4"

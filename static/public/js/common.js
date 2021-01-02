@@ -1,7 +1,5 @@
 'use strict';
 import '../style.css';
-// 名前空間
-// var KANIKEIJIBAN = KANIKEIJIBAN || {};
 const COMMON = {};
 
 COMMON.CONSTANTS = {
@@ -26,11 +24,11 @@ COMMON.UTILS = {
       .split('; ')
       .find(key => key.startsWith('password'))
       .split('=')[1];
-    return cookieValue;
+    return decodeURIComponent(cookieValue);
   },
   setCookie: (password) => {
     const expires = 1000 * 60 * 60 * 1; // 1 hour
-    document.cookie = `password=${password}; expires=${expires};`;
+    document.cookie = `password=${encodeURIComponent(password)}; expires=${expires};`;
   },
   inputView: (id, text) => {
     const target = document.getElementById(id);

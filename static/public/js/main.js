@@ -101,6 +101,7 @@ KANIKEIJIBAN.MAIN.SERVER = {
       const res = await axios.post(`${COMMON.CONSTANTS.URL}/posts`, this.postData);
       // // フォームをリセット
       this.keijibanForm.reset();
+      this.postData = {};
       this.preview.innerHTML = '';
       const newPost = res.data;
       if (newPost.cookieFlag === 'on') {
@@ -154,6 +155,8 @@ KANIKEIJIBAN.MAIN.SERVER = {
           const postDiv = KANIKEIJIBAN.MAIN.VIEW.postsView(post);
           targetElm.parentNode.insertBefore(postDiv, targetElm);
           targetElm.remove();
+          // 更新データを初期化
+          mySelf.updateData = {};
           KANIKEIJIBAN.MAIN.VIEW.createEditModeBtn(post.id);
 
         }

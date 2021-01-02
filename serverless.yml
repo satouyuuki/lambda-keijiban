@@ -30,8 +30,15 @@ provider:
         
 plugins:
   - serverless-sync-s3buckets
+  - serverless-webpack
+
+package: 
+  individually: true
 
 custom:
+  webpack:
+    packager: 'yarn'
+    webpackConfig: 'sls.webpack.config.js'
   siteName: yuuki-aws-dev.work
   adminSiteName: admin.yuuki-aws-dev.work
   imageUploadBucket: keijiban-image-upload-bucket-1218
@@ -90,6 +97,17 @@ functions:
           path: api/posts
           method: get
           cors: true
+  adminDeleteKeijibanPosts:
+    handler: lambdas/endpoints/adminDeleteKeijibanPosts.handler
+    events:
+      - http:
+          path: admin/delete/{id}
+          method: delete
+          cors: true
+          integration: lambda
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
 resources:
  Resources:
   ImageUploadBucket:
@@ -367,3 +385,13 @@ resources:
               "cognito-identity.amazonaws.com:amr": authenticated
       ManagedPolicyArns:
       - Ref: AuthenticatedPolicy
+  ApiGatewayAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: ApiGatewayAuthorizer
+      RestApiId:
+        Ref: ApiGatewayRestApi
+      IdentitySource: method.request.header.Authorization
+      Type: COGNITO_USER_POOLS
+      ProviderARNs:
+        - !GetAtt CognitoUserPool.Arn
